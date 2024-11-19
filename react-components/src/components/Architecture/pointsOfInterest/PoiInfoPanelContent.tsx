@@ -22,6 +22,7 @@ import { CreatePoiCommentCommand } from '../../../architecture/concrete/pointsOf
 import { useCommentsForPoiQuery } from './useCommentsForPoiQuery';
 import { RevealButtons } from '../RevealButtons';
 import { useSelectedPoi } from './useSelectedPoi';
+import { useTranslation } from '../../i18n/I18n';
 
 export const PoiInfoPanelContent = (): ReactNode => {
   return (
@@ -59,6 +60,8 @@ const PanelBody = (): ReactNode => {
 };
 
 export const CommentSection = (): ReactNode => {
+  const { t } = useTranslation();
+
   const poi = useSelectedPoi();
 
   const comments = useCommentsForPoiQuery(poi);
@@ -67,7 +70,7 @@ export const CommentSection = (): ReactNode => {
   }
 
   return (
-    <Accordion type="ghost" title={{ key: 'COMMENTS', fallback: 'Comments' }.fallback} gap={8}>
+    <Accordion type="ghost" title={t('COMMENTS', 'Comments')} gap={8}>
       <Flex direction="column" gap={8}>
         {comments.data?.map((comment) => (
           <SingleCommentDisplay key={`${comment.ownerId}/${comment.content}`} comment={comment} />

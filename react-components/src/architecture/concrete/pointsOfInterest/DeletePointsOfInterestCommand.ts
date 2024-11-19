@@ -14,7 +14,7 @@ export class DeleteSelectedPointsOfInterestCommand<
   }
 
   public override get tooltip(): TranslateKey {
-    return { fallback: 'Delete point of interest' };
+    return { key: 'POINT_OF_INTEREST_DELETE_THIS', fallback: 'Delete this Point of Interest' };
   }
 
   public override get buttonType(): ButtonType {
