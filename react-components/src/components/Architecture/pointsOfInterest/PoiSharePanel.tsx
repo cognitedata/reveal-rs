@@ -100,5 +100,6 @@ const StyledShareContainer = styled.div`
   padding: 16px;
   width: fit-content;
   max-width: fit-content;
+  min-width: 400px;
   box-shadow: var(--cogs-elevation--overlay);
 `;

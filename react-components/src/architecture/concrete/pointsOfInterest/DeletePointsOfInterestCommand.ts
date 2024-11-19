@@ -1,7 +1,7 @@
 /*!
  * Copyright 2024 Cognite AS
  */
-import { type TranslateKey } from '../../base/utilities/TranslateKey';
+import { TranslateDelegate, type TranslateKey } from '../../base/utilities/TranslateKey';
 import { type ButtonType } from '../../../components/Architecture/types';
 import { PointsOfInterestCommand } from './PointsOfInterestCommand';
 import { type IconName } from '../../base/utilities/IconName';

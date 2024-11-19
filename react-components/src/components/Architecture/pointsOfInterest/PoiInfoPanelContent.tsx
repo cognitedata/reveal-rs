@@ -9,6 +9,7 @@ import {
   Flex,
   ShareIcon,
   TextLabel,
+  Tooltip,
   WaypointIcon
 } from '@cognite/cogs.js';
 import { Dropdown } from '@cognite/cogs-lab';
@@ -34,6 +35,8 @@ export const PoiInfoPanelContent = (): ReactNode => {
 };
 
 const PanelHeader = (): ReactNode => {
+  const { t } = useTranslation();
+
   const selectedPoi = useSelectedPoi();
   if (selectedPoi === undefined) {
     return undefined;
@@ -47,9 +50,11 @@ const PanelHeader = (): ReactNode => {
       <Divider direction="vertical" weight="2px" />
       <Flex direction="row" justifyContent="flex-start">
         <Dropdown placement="bottom-end" content={<PoiSharePanel />}>
-          <Button icon=<ShareIcon /> type="ghost" />
+          <Tooltip placement="top-end" appendTo="parent" content={t('SHARE', 'Share')}>
+            <Button icon=<ShareIcon /> type="ghost" />
+          </Tooltip>
         </Dropdown>
-        <RevealButtons.DeleteSelectedPointOfInterest />
+        <RevealButtons.DeleteSelectedPointOfInterest toolbarPlacement={'top'} />
       </Flex>
     </Flex>
   );
