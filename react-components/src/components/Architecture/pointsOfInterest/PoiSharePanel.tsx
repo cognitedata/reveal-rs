@@ -20,6 +20,11 @@ export const PoiSharePanel = (): ReactNode => {
     selectedPointOfInterest?.properties.visibility ?? 'PRIVATE'
   );
 
+  const handleShare = async (): Promise<void> => {
+    const url = window.location.href;
+    await navigator.clipboard.writeText(url);
+  };
+
   useOnUpdateDomainObject(poiDomainObject, () => {
     const visibility = selectedPointOfInterest?.properties.visibility ?? 'PRIVATE';
     setPoiVisibility(visibility);
@@ -33,8 +38,8 @@ export const PoiSharePanel = (): ReactNode => {
           <TextLabel text={t('SHARE', 'Share')} />
         </Flex>
         <PoiVisibilityInfobox poiDomainObject={poiDomainObject} poiVisibility={poiVisibility} />
-        <Button icon=<LinkIcon /> disabled={poiVisibility === 'PRIVATE'}>
-          {t('COPY_LINK', 'Copy link')}
+        <Button icon=<LinkIcon /> disabled={poiVisibility === 'PRIVATE'} onClick={handleShare}>
+          {t('COPY_URL_TO_SHARE', 'Copy URL to share')}
         </Button>
       </Flex>
     </StyledShareContainer>
