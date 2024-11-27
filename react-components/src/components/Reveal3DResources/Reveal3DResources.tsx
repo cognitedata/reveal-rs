@@ -35,11 +35,7 @@ import {
 import { type ImageCollectionModelStyling } from '../Image360CollectionContainer/useApply360AnnotationStyling';
 import { is360ImageAddOptions } from './typeGuards';
 import { useRemoveNonReferencedModels } from './useRemoveNonReferencedModels';
-import {
-  useAssetMappedNodesForRevisions,
-  useGenerateAssetMappingCachePerItemFromModelCache,
-  useGenerateNode3DCache
-} from '../CacheProvider/AssetMappingAndNode3DCacheProvider';
+
 import { useCalculateCadStyling } from './useCalculateCadStyling';
 import { useReveal3DResourcesStylingLoadingSetter } from './Reveal3DResourcesInfoContext';
 import { type CadModelStyling } from '../CadModelContainer/types';
@@ -75,11 +71,6 @@ export const Reveal3DResources = ({
     () => reveal3DModels.filter((model): model is CadModelOptions => model.type === 'cad'),
     [reveal3DModels]
   );
-
-  const { data: assetMappings } = useAssetMappedNodesForRevisions(cadModelOptions);
-
-  useGenerateAssetMappingCachePerItemFromModelCache(cadModelOptions, assetMappings);
-  useGenerateNode3DCache(cadModelOptions, assetMappings);
 
   const pointCloudModelOptions = useMemo(
     () =>
