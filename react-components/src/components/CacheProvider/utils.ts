@@ -9,7 +9,7 @@ import {
   type AssetMapping3D,
   type IdEither
 } from '@cognite/sdk';
-import { type CoreDmImage360Annotation, type DataSourceType } from '@cognite/reveal';
+import { CoreDmImage360Annotation, type DataSourceType } from '@cognite/reveal';
 import { type InstanceReference, isIdEither } from '../../utilities/instanceIds';
 import {
   createInstanceReferenceKey,
@@ -41,18 +41,6 @@ export function getInstanceReferenceFromImage360Annotation(
   }
 }
 
-/* export function assetOrExternalIdToInstanceReference(
-  assetIdentifier: string | number | DmsUniqueIdentifier
-): InstanceReference {
-  if (typeof assetIdentifier === 'string') {
-    return { externalId: assetIdentifier };
-  } else if (typeof assetIdentifier === 'number') {
-    return { id: assetIdentifier };
-  } else {
-    return assetIdentifier;
-  }
-} */
-
 export function getAssetIdKeyForImage360Annotation(
   annotation: DataSourceType['image360AnnotationType']
 ): InstanceReferenceKey | undefined {
@@ -62,33 +50,6 @@ export function getAssetIdKeyForImage360Annotation(
   }
   return createInstanceReferenceKey(instanceRef);
 }
-
-/* export function getIdKeyForAssetId(
-  annotationAssetRef: AnnotationsAssetRef | DmsUniqueIdentifier | number | string
-): string | undefined {
-  if (typeof annotationAssetRef === 'string') {
-    return annotationAssetRef;
-  }
-  if (typeof annotationAssetRef === 'number') {
-    return String(annotationAssetRef);
-  }
-  if (isDmAnnotationAssetRef(annotationAssetRef)) {
-    return createFdmKey(annotationAssetRef);
-  }
-
-  return annotationAssetRef.id !== undefined
-    ? String(annotationAssetRef.id)
-    : annotationAssetRef.externalId;
-
-  function isDmAnnotationAssetRef(
-    annotationAssetRef: AnnotationsAssetRef | DmsUniqueIdentifier
-  ): annotationAssetRef is DmsUniqueIdentifier {
-    return (
-      (annotationAssetRef as DmsUniqueIdentifier).externalId !== undefined &&
-      (annotationAssetRef as DmsUniqueIdentifier).space !== undefined
-    );
-  }
-} */
 
 export function getIdKeyForImage360Annotation(
   annotation: DataSourceType['image360AnnotationType']
