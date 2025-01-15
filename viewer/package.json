@@ -124,7 +124,7 @@
     "nock": "^13.5.4",
     "prettier": "^3.2.5",
     "process": "^0.11.10",
-    "puppeteer": "^22.7.1",
+    "puppeteer": "^23.0.0",
     "random-seed": "^0.3.0",
     "raw-loader": "^4.0.2",
     "remove-files-webpack-plugin": "^1.5.0",
