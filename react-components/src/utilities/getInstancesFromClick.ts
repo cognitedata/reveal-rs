@@ -9,14 +9,15 @@ import {
   type DMDataSourceType,
   type PointCloudIntersection
 } from '@cognite/reveal';
-import { type InstanceReference } from '../data-providers';
 import { type CdfCaches } from '../architecture/base/renderTarget/CdfCaches';
 import { fetchAncestorNodesForTreeIndex } from '../components/CacheProvider/requests';
 import { EMPTY_ARRAY } from './constants';
 import { fetchAnnotationsForModel } from '../hooks/pointClouds/fetchAnnotationsForModel';
 import { isDMIdentifier } from '../components';
-import { is360ImageAnnotation } from './is360ImageAnnotation';
 import { type RevealRenderTarget } from '../architecture';
+import { getInstanceReferenceFromImage360Annotation } from '../components/CacheProvider/utils';
+import { type InstanceReference, isIdEither } from './instanceIds';
+import { type IdEither } from '@cognite/sdk';
 
 export async function getInstancesFromClick(
   renderTarget: RevealRenderTarget,
@@ -33,12 +34,14 @@ export async function getInstancesFromClick(
     event.offsetY
   );
 
-  const image360AnnotationData = image360AnnotationIntersection?.annotation.annotation.data;
-  const has360Asset =
-    image360AnnotationData !== undefined && is360ImageAnnotation(image360AnnotationData);
+  const image360Annotation = image360AnnotationIntersection?.annotation.annotation;
+  const annotationAsset =
+    image360Annotation !== undefined
+      ? getInstanceReferenceFromImage360Annotation(image360Annotation)
+      : undefined;
 
-  if (!coreDmOnly && has360Asset && image360AnnotationData.assetRef.id !== undefined) {
-    return [{ assetId: image360AnnotationData.assetRef.id }];
+  if (!coreDmOnly && annotationAsset !== undefined) {
+    return [annotationAsset];
   }
 
   if (intersection === undefined) {
@@ -78,8 +81,11 @@ async function getPointCloudAnnotationMappingsFromIntersection(
     return [];
   }
 
-  if (intersection.volumeMetadata?.assetRef?.id !== undefined) {
-    return [{ assetId: intersection.volumeMetadata.assetRef.id }];
+  if (
+    intersection.volumeMetadata?.assetRef !== undefined &&
+    isIdEither(intersection.volumeMetadata.assetRef as IdEither)
+  ) {
+    return [intersection.volumeMetadata.assetRef as IdEither];
   }
   const assetExternalId = intersection.volumeMetadata?.assetRef?.externalId;
 
@@ -94,7 +100,7 @@ async function getPointCloudAnnotationMappingsFromIntersection(
     caches.pointCloudAnnotationCache
   );
 
-  return annotations?.map((annotation) => ({ assetId: annotation.asset.id })) ?? EMPTY_ARRAY;
+  return annotations?.map((annotation) => ({ id: annotation.asset.id })) ?? EMPTY_ARRAY;
 }
 
 function getPointCloudFdmInstancesFromIntersection(
@@ -151,5 +157,5 @@ async function getAssetMappingPromise(
     ancestors
   );
 
-  return nodeAssetResult.mappings.map((mapping) => ({ assetId: mapping.assetId }));
+  return nodeAssetResult.mappings.map((mapping) => ({ id: mapping.assetId }));
 }

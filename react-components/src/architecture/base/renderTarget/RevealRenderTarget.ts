@@ -41,6 +41,7 @@ import { ContextMenuController } from './ContextMenuController';
 import { InstanceStylingController } from './InstanceStylingController';
 import { type Class } from '../domainObjectsHelpers/Class';
 import { CdfCaches } from './CdfCaches';
+import { type DmsUniqueIdentifier } from '../../../data-providers';
 
 const DIRECTIONAL_LIGHT_NAME = 'DirectionalLight';
 
@@ -113,7 +114,7 @@ export class RevealRenderTarget {
     return this._viewer.canDoImage360Action(Image360Action.Exit);
   }
 
-  public get active360ImageId(): string | undefined {
+  public get active360ImageId(): string | DmsUniqueIdentifier | undefined {
     return this._viewer.getActive360ImageInfo()?.image360.id;
   }
 

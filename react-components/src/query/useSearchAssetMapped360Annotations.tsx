@@ -7,19 +7,31 @@ import {
   type FileFilterProps,
   type Asset,
   type CogniteClient,
-  type AnnotationModel
+  type AnnotationModel,
+  type IdEither
 } from '@cognite/sdk';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
-import { chunk, uniqBy } from 'lodash';
+import { chunk, partition, uniqBy } from 'lodash';
 import { isDefined } from '../utilities/isDefined';
-import { getAssetIdOrExternalIdFromImage360Annotation } from '../components/CacheProvider/utils';
-import { type Image360AnnotationMappedAssetData } from '../hooks/types';
+import {
+  type ClassicImage360AnnotationMappedData,
+  type Image360AnnotationMappedAssetData
+} from '../hooks/types';
 import { is360ImageAnnotation } from '../utilities/is360ImageAnnotation';
-import { type Image360AnnotationFilterOptions } from '@cognite/reveal';
+import {
+  type ImageAssetLinkAnnotationInfo,
+  type Image360AnnotationFilterOptions
+} from '@cognite/reveal';
+import { type DmsUniqueIdentifier } from '../data-providers';
+import { fetchAssetsForAssetIds } from '../components/CacheProvider/AnnotationModelUtils';
+import { createInstanceReferenceKey } from '../utilities/instanceIds/toKey';
+import { isIdEither } from '../utilities/instanceIds';
+import { isSameIdEither } from '../utilities/instanceIds/equality';
+import { matchAssetWithQuery } from '../utilities/instances/matchAssetWithQuery';
 
 export const useAllAssetsMapped360Annotations = (
   sdk: CogniteClient,
-  siteIds: string[],
+  siteIds: Array<DmsUniqueIdentifier | string>,
   image360AnnotationFilterOptions: Image360AnnotationFilterOptions = { status: `approved` }
 ): UseQueryResult<Image360AnnotationMappedAssetData[]> => {
   return useQuery({
@@ -31,7 +43,7 @@ export const useAllAssetsMapped360Annotations = (
       image360AnnotationFilterOptions.status
     ],
     queryFn: async () => {
-      const assetMappings = await getAssetsMapped360Annotations(
+      const assetMappings = await getAssetMapped360Annotations(
         sdk,
         siteIds,
         image360AnnotationFilterOptions
@@ -71,12 +83,7 @@ export const useSearchAssetsMapped360Annotations = (
       const assetMappings = assetAnnotationMappings?.map((mapping) => mapping.asset) ?? [];
 
       const filteredSearchedAssets =
-        assetMappings?.filter((asset) => {
-          const isInName = asset.name.toLowerCase().includes(query.toLowerCase());
-          const isInDescription = asset.description?.toLowerCase().includes(query.toLowerCase());
-
-          return isInName || isInDescription;
-        }) ?? [];
+        assetMappings?.filter((asset) => matchAssetWithQuery(asset, query)) ?? [];
 
       const filteredAssetAnnotationMappings =
         assetAnnotationMappings?.filter((mapping) =>
@@ -90,85 +97,76 @@ export const useSearchAssetsMapped360Annotations = (
   });
 };
 
-async function getAssetsMapped360Annotations(
+async function getAssetMapped360Annotations(
   sdk: CogniteClient,
-  siteIds: string[],
+  siteIds: Array<string | DmsUniqueIdentifier>,
   image360AnnotationFilterOptions: Image360AnnotationFilterOptions
 ): Promise<Image360AnnotationMappedAssetData[]> {
+  const [classicSiteIds, _dmCollectionIds] = partition(siteIds, (id) => typeof id === 'string');
+
+  return ([] as Image360AnnotationMappedAssetData[]).concat(
+    await getClassicAssetMapped360Annotations(classicSiteIds, sdk, image360AnnotationFilterOptions)
+  );
+  // TODO: Implement DM AssetMapped 360 annotations too
+  /* .concat(
+      await getDmAssetMapped360Annotations(dmCollectionIds, sdk, image360AnnotationFilterOptions)
+    ); */
+}
+
+async function getClassicAssetMapped360Annotations(
+  siteIds: string[],
+  sdk: CogniteClient,
+  image360AnnotationFilterOptions: Image360AnnotationFilterOptions
+): Promise<ClassicImage360AnnotationMappedData[]> {
   const fileIdsList = await get360ImagesFileIds(siteIds, sdk);
   const image360Annotations = await get360ImageAnnotations(
     fileIdsList,
     sdk,
     image360AnnotationFilterOptions
   );
-  const result = await get360AnnotationAssets(image360Annotations, sdk);
-
-  return result;
+  return await get360AnnotationAssets(image360Annotations, sdk);
 }
 
 async function get360AnnotationAssets(
   image360Annotations: AnnotationModel[],
   sdk: CogniteClient
-): Promise<Image360AnnotationMappedAssetData[]> {
+): Promise<ClassicImage360AnnotationMappedData[]> {
   const filteredAnnotationMappings = image360Annotations
     .map((annotation) => {
-      const assetId = getAssetIdOrExternalIdFromImage360Annotation(annotation);
-      if (assetId === undefined) {
+      const assetReference = (annotation as ImageAssetLinkAnnotationInfo).data.assetRef;
+
+      if (!isIdEither(assetReference as IdEither)) {
         return undefined;
       }
+
       return {
-        assetId,
+        assetReference: assetReference as IdEither,
         annotationId: annotation.id
       };
     })
     .filter(isDefined);
 
-  const uniqueAnnotationMapping = uniqBy(
-    filteredAnnotationMappings,
-    (annotationMapping) => annotationMapping.assetId
+  const uniqueAnnotationMapping = uniqBy(filteredAnnotationMappings, (mapping) =>
+    createInstanceReferenceKey(mapping.assetReference)
   );
 
-  const assets = await retrieveAssets(sdk, uniqueAnnotationMapping);
+  const assets = await fetchAssetsForAssetIds(
+    uniqueAnnotationMapping.map((mapping) => mapping.assetReference),
+    sdk
+  );
   const flatAssets = assets.flat();
   return getAssetsWithAnnotations(flatAssets, filteredAnnotationMappings);
 }
 
-async function retrieveAssets(
-  sdk: CogniteClient,
-  annotationMapping: Array<{ assetId: string | number; annotationId: number }>
-): Promise<Asset[][]> {
-  return await Promise.all(
-    chunk(annotationMapping, 1000).map(async (mappingChunk) => {
-      const retrievedAssets = await sdk.assets.retrieve(
-        mappingChunk.map((mapping) => {
-          const assetId = mapping.assetId;
-          if (typeof assetId === 'number') {
-            return { id: assetId };
-          } else {
-            return { externalId: assetId };
-          }
-        }),
-        { ignoreUnknownIds: true }
-      );
-      return retrievedAssets;
-    })
-  );
-}
-
 function getAssetsWithAnnotations(
   flatAssets: Asset[],
-  annotationMapping: Array<{ assetId: string | number; annotationId: number }>
+  annotationMapping: Array<{ assetReference: IdEither; annotationId: number }>
 ): Array<{ asset: Asset; annotationIds: number[] }> {
   const flatAssetsWithAnnotations: Array<{ asset: Asset; annotationIds: number[] }> = [];
 
   flatAssets.forEach((asset) => {
     const matchingMapping = annotationMapping.find((mapping) => {
-      const assetId = mapping.assetId;
-      if (typeof assetId === 'number') {
-        return asset.id === assetId;
-      } else {
-        return asset.externalId === assetId;
-      }
+      return isSameIdEither(mapping.assetReference, asset);
     });
 
     if (matchingMapping !== undefined) {

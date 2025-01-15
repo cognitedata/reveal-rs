@@ -14,9 +14,9 @@ import { CreatePointsOfInterestWithDescriptionCommand } from './CreatePointsOfIn
 import { type RevealRenderTarget } from '../../base/renderTarget/RevealRenderTarget';
 import { BaseEditTool } from '../../base/commands/BaseEditTool';
 import { getInstancesFromClick } from '../../../utilities/getInstancesFromClick';
-import { type InstanceReference } from '../../../data-providers';
 import { DefaultNodeAppearance } from '@cognite/reveal';
 import { createInstanceStyleGroup } from '../../../components/Reveal3DResources/instanceStyleTranslation';
+import { type InstanceReference } from '../../../utilities/instanceIds';
 
 const ASSIGNED_INSTANCE_STYLING_SYMBOL = Symbol('poi3d-assigned-instance-styling');
 

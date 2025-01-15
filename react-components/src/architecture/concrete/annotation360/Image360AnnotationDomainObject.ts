@@ -9,9 +9,9 @@ import { type TranslationInput } from '../../base/utilities/TranslateInput';
 import { LineDomainObject } from '../primitives/line/LineDomainObject';
 import { Color, Vector3 } from 'three';
 import { LineRenderStyle } from '../primitives/line/LineRenderStyle';
-import { type DirectRelationReference } from '@cognite/sdk';
 import { createTriangleIndexesFromVectors } from './createTriangleIndexesFromVectors';
 import { type AnnotationIdentifier, type AssetIdentifier, type AnnotationStatus } from './types';
+import { type DmsUniqueIdentifier } from '../../../data-providers';
 
 const DEFAULT_VECTOR_LENGTH = 5;
 
@@ -20,7 +20,7 @@ export class Image360AnnotationDomainObject extends LineDomainObject {
   // INSTANCE FIELDS
   // ==================================================
 
-  public connectedImageId: string | DirectRelationReference;
+  public connectedImageId: string | DmsUniqueIdentifier;
   public readonly center = new Vector3(); // The points are unit vectors from the center
   public vectorLength = DEFAULT_VECTOR_LENGTH;
   public annotationIdentifier?: AnnotationIdentifier;
@@ -31,7 +31,7 @@ export class Image360AnnotationDomainObject extends LineDomainObject {
   // CONSTRUCTOR
   // ==================================================
 
-  public constructor(connectedImageId: string | DirectRelationReference) {
+  public constructor(connectedImageId: string | DmsUniqueIdentifier) {
     super(PrimitiveType.Polygon);
     this.color = new Color(Color.NAMES.yellow);
     this.connectedImageId = connectedImageId;

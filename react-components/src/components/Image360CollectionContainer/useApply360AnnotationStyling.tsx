@@ -36,7 +36,7 @@ export const useApply360AnnotationStyling = (
 ): void => {
   const viewer = useReveal();
   const [lastStyledImageAnnotations, setLastStyledImageAnnotations] = useState<
-    Image360Annotation[]
+    Array<Image360Annotation<DataSourceType>>
   >([]);
 
   const abortController = useRef(new AbortController());
@@ -88,7 +88,7 @@ async function applyStyling(
   styling: AnnotationIdStylingGroup[],
   viewer: Cognite3DViewer<DataSourceType>,
   applyDefaultAnnotationStyling: () => void,
-  setLastStyledImageAnnotations: (annotations: Image360Annotation[]) => void,
+  setLastStyledImageAnnotations: (annotations: Array<Image360Annotation<DataSourceType>>) => void,
   signal: AbortSignal
 ): Promise<void> {
   if (styling === undefined || styling.length === 0) return;

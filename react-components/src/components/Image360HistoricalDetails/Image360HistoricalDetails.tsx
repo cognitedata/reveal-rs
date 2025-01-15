@@ -5,14 +5,18 @@
 import { type DataSourceType, type Cognite3DViewer, type Image360 } from '@cognite/reveal';
 import { type ReactElement, useEffect, useRef, useState } from 'react';
 import { Image360HistoricalPanel } from './Panel/Image360HistoricalPanel';
-import { Image360HistoricalSummary } from './Toolbar/Image360HistoricalSummary';
+import {
+  Image360HistoricalSummary,
+  type Image360RevisionDetails
+} from './Toolbar/Image360HistoricalSummary';
 import { formatDate } from './utils/FormatDate';
 import styled from 'styled-components';
 import { uniqueId } from 'lodash';
+import { getStationIdentifier } from './utils/getStationIdentifier';
 
 export type Image360HistoricalDetailsProps = {
   viewer: Cognite3DViewer<DataSourceType>;
-  image360Entity?: Image360;
+  image360Entity?: Image360<DataSourceType>;
   onExpand?: (isExpanded: boolean) => void;
   fallbackLanguage?: string;
 };
@@ -25,14 +29,7 @@ export const Image360HistoricalDetails = ({
 }: Image360HistoricalDetailsProps): ReactElement => {
   const [revisionDetailsExpanded, setRevisionDetailsExpanded] = useState<boolean>(false);
   const [activeRevision, setActiveRevision] = useState<number>(0);
-  const [revisionCollection, setRevisionCollection] = useState<
-    Array<{
-      date?: string;
-      imageUrl?: string;
-      index: number;
-      image360Entity: Image360 | undefined;
-    }>
-  >([]);
+  const [revisionCollection, setRevisionCollection] = useState<Image360RevisionDetails[]>([]);
   const [imageUrls, setImageUrls] = useState<Array<string | undefined>>([]);
   const [minWidth, setMinWidth] = useState('100px');
   const newScrollPosition = useRef(0);
@@ -99,7 +96,9 @@ export const Image360HistoricalDetails = ({
               ref={newScrollPosition}
               key={uniqueId()}
               viewer={viewer}
-              stationId={image360Entity?.id}
+              stationId={
+                image360Entity !== undefined ? getStationIdentifier(image360Entity) : undefined
+              }
               stationName={image360Entity?.label}
               activeRevision={activeRevision}
               setActiveRevision={setActiveRevision}

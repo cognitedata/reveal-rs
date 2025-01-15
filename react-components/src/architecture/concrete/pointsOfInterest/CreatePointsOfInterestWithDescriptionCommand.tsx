@@ -5,7 +5,7 @@ import { type Vector3 } from 'three';
 import { PointsOfInterestDomainObject } from './PointsOfInterestDomainObject';
 import { type TranslationInput } from '../../base/utilities/TranslateInput';
 import { createPointsOfInterestPropertiesFromPointAndTitle } from './types';
-import { type InstanceReference, type DmsUniqueIdentifier } from '../../../data-providers';
+import { type DmsUniqueIdentifier } from '../../../data-providers';
 
 import {
   CustomBaseInputCommand,
@@ -13,6 +13,7 @@ import {
 } from '../../base/commands/CustomBaseInputCommand';
 import { InstanceLabel } from '../../../components/InstanceLabel';
 import { isDefined } from '../../../utilities/isDefined';
+import { type InstanceReference } from '../../../utilities/instanceIds';
 
 export class CreatePointsOfInterestWithDescriptionCommand extends CustomBaseInputCommand {
   private readonly _point: Vector3;

@@ -3,6 +3,9 @@
  */
 import { type Node3D, type CogniteExternalId, type Asset } from '@cognite/sdk';
 import { type AssetAnnotationImage360Info } from '@cognite/reveal';
+import { type DmsUniqueIdentifier } from '../data-providers';
+import { type FdmNode } from '../data-providers/FdmSDK';
+import { type AssetProperties } from '../data-providers/core-dm-provider/utils/filters';
 
 export type ThreeDModelFdmMappings = {
   modelId: number;
@@ -42,7 +45,16 @@ export type PointCloudAnnotationMappedAssetData = {
   asset: Asset;
 };
 
-export type Image360AnnotationMappedAssetData = {
+export type Image360AnnotationMappedAssetData =
+  | ClassicImage360AnnotationMappedData
+  | DmImage360AnnotationMappedData;
+
+export type ClassicImage360AnnotationMappedData = {
   asset: Asset;
   annotationIds: number[];
+};
+
+export type DmImage360AnnotationMappedData = {
+  asset: FdmNode<AssetProperties>;
+  annotationIds: DmsUniqueIdentifier[];
 };

@@ -5,7 +5,8 @@
 import {
   type PointerEventData,
   type Image360AnnotationIntersection,
-  type AnyIntersection
+  type AnyIntersection,
+  type DataSourceType
 } from '@cognite/reveal';
 import { useEffect, useMemo, useState } from 'react';
 import { type CogniteInternalId, type Node3D } from '@cognite/sdk';
@@ -14,7 +15,7 @@ import { type NodeAssetMappingResult } from '../components/CacheProvider/AssetMa
 import { usePointCloudAnnotationMappingForIntersection } from './pointClouds/usePointCloudAnnotationMappingForIntersection';
 import { type PointCloudAnnotationMappedAssetData } from './types';
 import { MOUSE, Vector2, type Vector3 } from 'three';
-import { type DmsUniqueIdentifier, type Source } from '../data-providers/FdmSDK';
+import { type Source, type DmsUniqueIdentifier } from '../data-providers/FdmSDK';
 import { useRenderTarget, useReveal } from '../components/RevealCanvas/ViewerContext';
 import { isActiveEditTool } from '../architecture/base/commands/BaseEditTool';
 import {
@@ -66,7 +67,7 @@ export type ClickedNodeData = {
    * A value of `null` means there was no result
    */
   pointCloudFdmVolumeMappingResult?: PointCloudFdmVolumeMappingWithViews[] | null;
-  intersection: AnyIntersection | Image360AnnotationIntersection;
+  intersection: AnyIntersection | Image360AnnotationIntersection<DataSourceType>;
 };
 
 export const useClickedNodeData = (options?: {
@@ -84,7 +85,7 @@ export const useClickedNodeData = (options?: {
   const [intersection, setIntersection] = useState<AnyIntersection | undefined>(undefined);
 
   const [image360AnnotationIntersection, setImage360AnnotationIntersection] = useState<
-    Image360AnnotationIntersection | undefined
+    Image360AnnotationIntersection<DataSourceType> | undefined
   >(undefined);
 
   const [position, setPosition] = useState<Vector2 | undefined>(undefined);
@@ -166,7 +167,7 @@ const useCombinedClickedNodeData = (
   assetMappings: NodeAssetMappingResult | undefined,
   pointCloudAssetMappingsResult: UseQueryResult<PointCloudAnnotationMappedAssetData[]>,
   pointCloudFdmVolumeMappingsResult: UseQueryResult<PointCloudFdmVolumeMappingWithViews[]>,
-  intersection: AnyIntersection | Image360AnnotationIntersection | undefined
+  intersection: AnyIntersection | Image360AnnotationIntersection<DataSourceType> | undefined
 ): ClickedNodeData | undefined => {
   const fdmData = useFdmData(fdmPromises);
 
