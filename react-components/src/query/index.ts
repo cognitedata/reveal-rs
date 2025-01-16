@@ -13,7 +13,7 @@ export { useModelsForInstanceQuery } from './useModelsForInstanceQuery';
 export {
   useAllAssetsMapped360Annotations,
   useSearchAssetsMapped360Annotations
-} from './useSearchAssetMapped360Annotations';
+} from './useSearchAssetsMapped360Annotations';
 export {
   useAllAssetsMappedPointCloudAnnotations,
   useSearchAssetsMappedPointCloudAnnotations
