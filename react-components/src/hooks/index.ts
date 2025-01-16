@@ -29,4 +29,4 @@ export type {
 
 export * from './cad';
 export * from './pointClouds';
-export { useImage360AnnotationMappingsForAssetIdKeys } from './useImage360AnnotationMappingsForAssetIdKeys';
+export { useImage360AnnotationMappingsForInstanceReferences } from './useImage360AnnotationMappingsForInstanceReferences';

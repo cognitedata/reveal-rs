@@ -2,10 +2,10 @@
  * Copyright 2025 Cognite AS
  */
 import { type AssetInstance } from './AssetInstance';
-import { isAsset } from './typeGuards';
+import { isClassicAsset } from './typeGuards';
 
 export function matchAssetWithQuery(assetInstance: AssetInstance, query: string): boolean {
-  if (isAsset(assetInstance)) {
+  if (isClassicAsset(assetInstance)) {
     const isInName = assetInstance.name.toLowerCase().includes(query.toLowerCase());
     const isInDescription = assetInstance.description?.toLowerCase().includes(query.toLowerCase());
 

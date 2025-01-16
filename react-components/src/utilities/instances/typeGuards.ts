@@ -11,7 +11,7 @@ export function isDmAsset(asset: AssetInstance): asset is FdmNode<AssetPropertie
   return isDmsInstance(asset);
 }
 
-export function isAsset(asset: AssetInstance): asset is Asset {
+export function isClassicAsset(asset: AssetInstance): asset is Asset {
   const assetId = (asset as Asset).id;
   return assetId !== undefined && typeof assetId === 'number';
 }

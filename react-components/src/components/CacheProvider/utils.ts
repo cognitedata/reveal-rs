@@ -9,13 +9,14 @@ import {
   type AssetMapping3D,
   type IdEither
 } from '@cognite/sdk';
-import { CoreDmImage360Annotation, type DataSourceType } from '@cognite/reveal';
+import { type CoreDmImage360Annotation, type DataSourceType } from '@cognite/reveal';
 import { type InstanceReference, isIdEither } from '../../utilities/instanceIds';
 import {
   createInstanceReferenceKey,
   type InstanceReferenceKey
 } from '../../utilities/instanceIds/toKey';
 import { createFdmKey } from './idAndKeyTranslation';
+import { DmsUniqueIdentifier } from '../../data-providers';
 
 export function getInstanceReferenceFromPointCloudAnnotation(
   annotation: AnnotationModel
@@ -56,6 +57,16 @@ export function getIdKeyForImage360Annotation(
 ): string | number {
   if (isCoreDmImage360Annotation(annotation)) {
     return createFdmKey(annotation.annotationIdentifier);
+  } else {
+    return annotation.id;
+  }
+}
+
+export function getIdForImage360Annotation(
+  annotation: DataSourceType['image360AnnotationType']
+): DmsUniqueIdentifier | number {
+  if (isCoreDmImage360Annotation(annotation)) {
+    return annotation.annotationIdentifier;
   } else {
     return annotation.id;
   }

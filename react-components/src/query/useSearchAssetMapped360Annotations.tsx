@@ -17,7 +17,6 @@ import {
   type ClassicImage360AnnotationMappedData,
   type Image360AnnotationMappedAssetData
 } from '../hooks/types';
-import { is360ImageAnnotation } from '../utilities/is360ImageAnnotation';
 import {
   type ImageAssetLinkAnnotationInfo,
   type Image360AnnotationFilterOptions
@@ -28,6 +27,7 @@ import { createInstanceReferenceKey } from '../utilities/instanceIds/toKey';
 import { isIdEither } from '../utilities/instanceIds';
 import { isSameIdEither } from '../utilities/instanceIds/equality';
 import { matchAssetWithQuery } from '../utilities/instances/matchAssetWithQuery';
+import { isClassicImage360AssetAnnotationData } from '../utilities/annotations';
 
 export const useAllAssetsMapped360Annotations = (
   sdk: CogniteClient,
@@ -223,7 +223,7 @@ async function get360ImageAnnotations(
 
       const filteredAnnotations = annotations
         .filter((annotation) => annotation.status === image360AnnotationFilterOptions.status)
-        .filter((annotation) => is360ImageAnnotation(annotation.data));
+        .filter((annotation) => isClassicImage360AssetAnnotationData(annotation.data));
       return filteredAnnotations;
     })
   );

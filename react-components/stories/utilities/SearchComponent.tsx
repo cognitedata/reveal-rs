@@ -25,7 +25,7 @@ import { is360ImageAddOptions } from '../../src/components/Reveal3DResources/typ
 import { type CogniteClient } from '@cognite/sdk';
 import { matchAssetWithQuery } from '../../src/utilities/instances/matchAssetWithQuery';
 import { type AssetInstance } from '../../src/utilities/instances/AssetInstance';
-import { isAsset } from '../../src/utilities/instances/typeGuards';
+import { isClassicAsset } from '../../src/utilities/instances/typeGuards';
 
 type SearchComponentProps = {
   sdk: CogniteClient;
@@ -330,7 +330,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
 };
 
 function assetInstanceToEquipment(instance: AssetInstance): Equipment {
-  if (isAsset(instance)) {
+  if (isClassicAsset(instance)) {
     return {
       view: 'Classic Asset',
       externalId: instance.id + '',

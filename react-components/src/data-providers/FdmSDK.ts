@@ -193,9 +193,17 @@ export type ViewItem = {
   implements: Source[];
 };
 
-export type DataModelListResponse = {
-  items: Array<{ views: Source[] }>;
+export type ListResponse<T> = {
+  items: T[];
 };
+
+export type ListResponseWithNextCursor<T> = ListResponse<T> & {
+  nextCursor?: string;
+};
+
+export type ViewItemListResponse = ListResponse<ViewItem>;
+
+export type DataModelListResponse = ListResponse<{ views: Source[] }>;
 
 export class FdmSDK {
   private readonly _sdk: CogniteClient;
@@ -233,7 +241,7 @@ export class FdmSDK {
     space: string,
     includeInheritedProperties: boolean = true
   ): Promise<{ views: ViewItem[] }> {
-    const result = await this._sdk.get(this._listViewsEndpoint, {
+    const result = await this._sdk.get<ViewItemListResponse>(this._listViewsEndpoint, {
       params: {
         includeInheritedProperties,
         space
@@ -241,7 +249,7 @@ export class FdmSDK {
     });
 
     if (result.status === 200) {
-      return { views: result.data.items as ViewItem[] };
+      return { views: result.data.items };
     }
     throw new Error(`Failed to list views. Status: ${result.status}`);
   }
@@ -302,13 +310,12 @@ export class FdmSDK {
       limit
     };
 
-    const result = await this._sdk.post(this._searchEndpoint, { data });
+    const result = await this._sdk.post<
+      ListResponse<EdgeItem<PropertiesType>> | ListResponse<NodeItem<PropertiesType>>
+    >(this._searchEndpoint, { data });
 
     if (result.status === 200) {
-      hoistInstanceProperties(
-        searchedView,
-        result.data.items as Array<EdgeItem<PropertiesType>> | Array<NodeItem<PropertiesType>>
-      );
+      hoistInstanceProperties(searchedView, result.data.items);
 
       return { instances: result.data.items };
     }
@@ -343,7 +350,7 @@ export class FdmSDK {
   ): Promise<{ instances: Array<EdgeItem<PropertiesType>>; nextCursor?: string }>;
 
   // eslint-disable-next-line no-dupe-class-members
-  public async filterInstances<PropertiesType = Record<string, any>>(
+  public async filterInstances<PropertiesType extends Record<string, any> = Record<string, any>>(
     filter: InstanceFilter | undefined,
     instanceType: InstanceType,
     source: Source,
@@ -360,20 +367,21 @@ export class FdmSDK {
       data.cursor = cursor;
     }
 
-    const result = await this._sdk.post(this._listEndpoint, { data });
+    const result = await this._sdk.post<
+      | ListResponseWithNextCursor<EdgeItem<PropertiesType>>
+      | ListResponseWithNextCursor<NodeItem<PropertiesType>>
+    >(this._listEndpoint, { data });
 
     if (result.status !== 200) {
       throw new Error(`Failed to fetch instances. Status: ${result.status}`);
     }
 
-    const typedResult = result.data.items as Array<
-      EdgeItem<Record<string, any>> | NodeItem<Record<string, any>>
-    >;
+    const typedResult = result.data.items;
 
     hoistInstanceProperties(source, typedResult);
 
     return {
-      instances: result.data.items,
+      instances: result.data.items as Array<EdgeItem<PropertiesType> | FdmNode<PropertiesType>>,
       nextCursor: result.data.nextCursor
     };
   }
@@ -435,7 +443,9 @@ export class FdmSDK {
       data.sources = sources.map((source) => ({ source }));
     }
 
-    const result = await this._sdk.post(this._byIdsEndpoint, { data });
+    const result = await this._sdk.post<ExternalIdsResultList<PropertyType>>(this._byIdsEndpoint, {
+      data
+    });
     if (result.status === 200) {
       return result.data;
     }
@@ -453,7 +463,10 @@ export class FdmSDK {
       replace: false
     };
 
-    const result = await this._sdk.post(this._createUpdateInstancesEndpoint, { data });
+    const result = await this._sdk.post<ExternalIdsResultList<PropertyType>>(
+      this._createUpdateInstancesEndpoint,
+      { data }
+    );
     if (result.status === 200) {
       return result.data;
     }
@@ -476,7 +489,10 @@ export class FdmSDK {
       replace: false
     };
 
-    const result = await this._sdk.post(this._createUpdateInstancesEndpoint, { data });
+    const result = await this._sdk.post<ExternalIdsResultList<PropertyType>>(
+      this._createUpdateInstancesEndpoint,
+      { data }
+    );
     if (result.status === 200) {
       return result.data;
     }
@@ -498,7 +514,10 @@ export class FdmSDK {
       items: queries
     };
 
-    const result = await this._sdk.post(this._deleteInstancesEndpoint, { data });
+    const result = await this._sdk.post<ExternalIdsResultList<PropertyType>>(
+      this._deleteInstancesEndpoint,
+      { data }
+    );
     if (result.status === 200) {
       return result.data;
     }
@@ -514,8 +533,8 @@ export class FdmSDK {
     throw new Error(`Failed to fetch instances`);
   }
 
-  public async getViewsByIds(views: Source[]): Promise<{ items: ViewItem[] }> {
-    const result = await this._sdk.post(this._viewsByIdEndpoint, {
+  public async getViewsByIds(views: Source[]): Promise<ViewItemListResponse> {
+    const result = await this._sdk.post<ViewItemListResponse>(this._viewsByIdEndpoint, {
       data: {
         items: views.map((view) => ({
           externalId: view.externalId,
@@ -553,7 +572,7 @@ export class FdmSDK {
   }
 
   public async listDataModels(): Promise<DataModelListResponse> {
-    const result = await this._sdk.get(this._listDataModelsEndpoint, {
+    const result = await this._sdk.get<DataModelListResponse>(this._listDataModelsEndpoint, {
       params: { limit: 1000, includeGlobal: true }
     });
     if (result.status === 200) {

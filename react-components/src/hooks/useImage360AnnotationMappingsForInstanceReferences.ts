@@ -17,7 +17,7 @@ export type Image360AnnotationDataResult = {
   annotationModel: Image360AnnotationModel[];
 };
 
-export const useImage360AnnotationMappingsForAssetIdKeys = (
+export const useImage360AnnotationMappingsForInstanceReferences = (
   assetIds: InstanceReference[] | undefined,
   siteIds: string[] | undefined
 ): UseQueryResult<Image360AnnotationAssetInfo[]> => {
