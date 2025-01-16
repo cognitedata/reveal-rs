@@ -15,7 +15,7 @@ export type Image360RevisionDetails = {
   date?: string;
   imageUrl?: string;
   index: number;
-  image360Entity: Image360 | undefined;
+  image360Entity: Image360<DataSourceType> | undefined;
 };
 
 export type Image360HistoricalSummaryProps = {

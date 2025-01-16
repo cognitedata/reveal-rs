@@ -9,6 +9,8 @@ export * from './hooks';
 export * from './query';
 export * from './data-providers';
 
+export * from './utilities/externalIndex';
+
 // Higher order components
 export { withSuppressRevealEvents } from './higher-order-components/withSuppressRevealEvents';
 

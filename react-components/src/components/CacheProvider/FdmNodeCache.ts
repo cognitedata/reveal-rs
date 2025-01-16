@@ -3,7 +3,7 @@
  */
 
 import { type Node3D, type CogniteClient, type CogniteExternalId } from '@cognite/sdk';
-import { type Source, type DmsUniqueIdentifier, type FdmSDK } from '../../data-providers/FdmSDK';
+import { type Source, type FdmSDK, type DmsUniqueIdentifier } from '../../data-providers/FdmSDK';
 import { RevisionFdmNodeCache } from './RevisionFdmNodeCache';
 import {
   type FdmConnectionWithNode,

@@ -8,9 +8,10 @@ import {
   type Node3D,
   type AnnotationsCogniteAnnotationTypesImagesAssetLink
 } from '@cognite/sdk';
-import { type DmsUniqueIdentifier, type Source } from '../../data-providers/FdmSDK';
+import { type FdmNode, type Source, type DmsUniqueIdentifier } from '../../data-providers/FdmSDK';
 import { type AssetAnnotationImage360Info, type DataSourceType } from '@cognite/reveal';
 import { type Vector3 } from 'three';
+import { type AssetProperties } from '../../data-providers/core-dm-provider/utils/filters';
 
 export type FdmCadConnection = {
   instance: DmsUniqueIdentifier;
@@ -66,7 +67,7 @@ export type Image360AnnotationModel = AnnotationModel & {
 };
 
 export type Image360AnnotationAssetInfo = {
-  asset: Asset;
+  asset: Asset | FdmNode<AssetProperties>;
   assetAnnotationImage360Info: AssetAnnotationImage360Info<DataSourceType>;
   position: Vector3;
 };

@@ -2,7 +2,8 @@
  * Copyright 2024 Cognite AS
  */
 
-import { type InstanceReference, type DmsUniqueIdentifier } from '../../../data-providers';
+import { type DmsUniqueIdentifier } from '../../../data-providers';
+import { type InstanceReference } from '../../../utilities/instanceIds';
 
 export type PoiVisibility = 'PUBLIC' | 'PRIVATE';
 

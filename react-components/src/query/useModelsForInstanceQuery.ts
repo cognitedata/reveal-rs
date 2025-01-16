@@ -5,15 +5,9 @@ import { type UseQueryResult, useQuery } from '@tanstack/react-query';
 import { getCadModelsForAsset } from '../hooks/network/getCadModelsForAsset';
 import { getPointCloudModelsForAsset } from '../hooks/network/getPointCloudModelsForAsset';
 import { useFdmSdk, useSDK } from '../components/RevealCanvas/SDKProvider';
-import { type CogniteClient } from '@cognite/sdk';
+import { type InternalId, type CogniteClient } from '@cognite/sdk';
 import { type TaggedAddResourceOptions } from '../components/Reveal3DResources/types';
 import { getImage360CollectionsForAsset } from '../hooks/network/getImage360CollectionsForAsset';
-import {
-  type AssetInstanceReference,
-  type InstanceReference,
-  isAssetInstance,
-  isDmsInstance
-} from '../data-providers/types';
 import { uniqBy } from 'lodash';
 import { createAddOptionsKey } from '../utilities/createAddOptionsKey';
 import { type Fdm3dDataProvider } from '../data-providers/Fdm3dDataProvider';
@@ -21,6 +15,7 @@ import { type DmsUniqueIdentifier } from '../data-providers';
 import { getPointCloudModelsForAssetInstance } from '../hooks/network/getPointCloudModelsForAssetInstance';
 import { type FdmSDK } from '../data-providers/FdmSDK';
 import { useFdm3dDataProvider } from '../components/CacheProvider/CacheProvider';
+import { type InstanceReference, isDmsInstance, isInternalId } from '../utilities/instanceIds';
 
 export const useModelsForInstanceQuery = (
   instance: InstanceReference | undefined
@@ -36,7 +31,7 @@ export const useModelsForInstanceQuery = (
         return undefined;
       }
 
-      if (isAssetInstance(instance)) {
+      if (isInternalId(instance)) {
         return await getModelsForAssetInstance(instance, cogniteClient);
       }
 
@@ -49,15 +44,12 @@ export const useModelsForInstanceQuery = (
 };
 
 async function getModelsForAssetInstance(
-  instance: AssetInstanceReference,
+  instance: InternalId,
   cogniteClient: CogniteClient
 ): Promise<TaggedAddResourceOptions[]> {
-  const cadModelsPromise = getCadModelsForAsset(instance.assetId, cogniteClient);
-  const pointCloudModelsPromise = getPointCloudModelsForAsset(instance.assetId, cogniteClient);
-  const image360CollectionsPromise = getImage360CollectionsForAsset(
-    instance.assetId,
-    cogniteClient
-  );
+  const cadModelsPromise = getCadModelsForAsset(instance.id, cogniteClient);
+  const pointCloudModelsPromise = getPointCloudModelsForAsset(instance.id, cogniteClient);
+  const image360CollectionsPromise = getImage360CollectionsForAsset(instance.id, cogniteClient);
 
   const results = (
     await Promise.all([cadModelsPromise, pointCloudModelsPromise, image360CollectionsPromise])

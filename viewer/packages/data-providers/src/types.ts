@@ -40,7 +40,9 @@ export type Image360AnnotationSpecifier<T extends DataSourceType> = {
 /**
  * Filter for finding linked annotations in either a classic 360 collection or a new one
  */
-export type InstanceReference<T extends DataSourceType> = T extends ClassicDataSourceType ? IdEither : DMInstanceRef;
+export type InstanceReference<T extends DataSourceType = DataSourceType> = T extends ClassicDataSourceType
+  ? IdEither
+  : DMInstanceRef;
 
 export interface Image360AnnotationProvider<T extends DataSourceType> {
   getRelevant360ImageAnnotations(

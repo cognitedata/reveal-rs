@@ -1,12 +1,12 @@
 import { Mock } from 'moq.ts';
 import { type FdmNodeCache } from '../../../src/components/CacheProvider/FdmNodeCache';
-import { type DmsUniqueIdentifier } from '../../../src/data-providers/FdmSDK';
 import { type Node3D } from '@cognite/sdk';
 import {
   type ModelRevisionId,
   type FdmCadConnection,
   type FdmConnectionWithNode
 } from '../../../src/components/CacheProvider/types';
+import { DmsUniqueIdentifier } from '../../../src/data-providers';
 
 const fdmNodeCacheMock = new Mock<FdmNodeCache>()
   .setup((instance) => instance.getAllMappingExternalIds)

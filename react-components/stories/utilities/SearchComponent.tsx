@@ -23,6 +23,9 @@ import {
 } from '../../src';
 import { is360ImageAddOptions } from '../../src/components/Reveal3DResources/typeGuards';
 import { type CogniteClient } from '@cognite/sdk';
+import { matchAssetWithQuery } from '../../src/utilities/instances/matchAssetWithQuery';
+import { type AssetInstance } from '../../src/utilities/instances/AssetInstance';
+import { isClassicAsset } from '../../src/utilities/instances/typeGuards';
 
 type SearchComponentProps = {
   sdk: CogniteClient;
@@ -182,26 +185,11 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
       ];
 
       const filteredAssets =
-        combinedAssets.filter((assetMappings) => {
-          const isInName = assetMappings.name.toLowerCase().includes(mainSearchQuery.toLowerCase());
-          const isInDescription = assetMappings.description
-            ?.toLowerCase()
-            .includes(mainSearchQuery.toLowerCase());
+        combinedAssets.filter((assetMappings) =>
+          matchAssetWithQuery(assetMappings, mainSearchQuery)
+        ) ?? [];
 
-          return isInName || isInDescription;
-        }) ?? [];
-
-      const mappedAssets: Equipment[] = filteredAssets.map((asset) => {
-        return {
-          view: 'Asset',
-          externalId: asset.id + '',
-          space: 'Whole project',
-          properties: {
-            name: asset.name,
-            description: asset.description
-          }
-        };
-      });
+      const mappedAssets = filteredAssets.map(assetInstanceToEquipment);
 
       return mappedAssets;
     } else if (searchMethod === 'assetSearch') {
@@ -223,17 +211,9 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
         ...(pointCloudAssetSearchData ?? [])
       ];
 
-      const searchedEquipment: Equipment[] = combinedAssetSearchData.map((asset) => {
-        return {
-          view: 'Asset',
-          externalId: asset.id + '',
-          space: 'Whole project',
-          properties: {
-            name: asset.name,
-            description: asset.description
-          }
-        };
-      });
+      const searchedEquipment: Equipment[] = combinedAssetSearchData.map((asset) =>
+        assetInstanceToEquipment(asset)
+      );
 
       return searchedEquipment;
     } else if (searchMethod === 'fdmSearch') {
@@ -348,6 +328,25 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
     </>
   );
 };
+
+function assetInstanceToEquipment(instance: AssetInstance): Equipment {
+  if (isClassicAsset(instance)) {
+    return {
+      view: 'Classic Asset',
+      externalId: instance.id + '',
+      space: 'Whole project',
+      properties: {
+        name: instance.name,
+        description: instance.description
+      }
+    };
+  } else {
+    return {
+      view: 'DM asset',
+      ...instance
+    };
+  }
+}
 
 function determineViewFromQueryResultNodeItem(nodeItem: NodeItem | Equipment): string {
   return findNonZeroProperty(nodeItem?.properties) ?? 'Unknown';

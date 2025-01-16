@@ -14,8 +14,8 @@ import {
   type PoiItem
 } from './types';
 import { createUpsertRequestFromPois } from './createUpsertRequestFromPois';
-import { type InstanceReference } from '../../../../data-providers';
 import { createUserMap } from './createUserMap';
+import { type InstanceReference } from '../../../../utilities/instanceIds';
 
 /**
  * A PoI provider using the Cognite Application Data Storage service as backing storage
@@ -192,7 +192,7 @@ function poiExternalInstanceRefToInstanceReference(
   }
 
   if (isPoiAssetRef(instance)) {
-    return { assetId: instance.id };
+    return { id: instance.id };
   } else if (isPoiDMRef(instance)) {
     return { externalId: instance.externalId, space: instance.instanceSpace };
   }

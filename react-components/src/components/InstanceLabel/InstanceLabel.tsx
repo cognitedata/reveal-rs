@@ -2,13 +2,12 @@
  * Copyright 2024 Cognite AS
  */
 import { type ReactElement, useMemo } from 'react';
-import { type InstanceReference } from '../../data-providers';
-import { isAssetInstance, isDmsInstance } from '../../data-providers/types';
 import { useAssetsByIdsQuery } from '../../query';
 import { EMPTY_ARRAY } from '../../utilities/constants';
 import { useDmInstancesByIds } from '../../query/useDmsInstanceByIdsQuery';
 import { COGNITE_DESCRIBABLE_SOURCE } from '../../data-providers/core-dm-provider/dataModels';
 import { HexagonIcon, Input, Tooltip } from '@cognite/cogs.js';
+import { type InstanceReference, isDmsInstance, isIdEither } from '../../utilities/instanceIds';
 
 const nameableSources = [COGNITE_DESCRIBABLE_SOURCE];
 
@@ -19,7 +18,7 @@ export type InstanceLabelProps = { instance: InstanceReference };
 export const InstanceLabel = ({ instance }: { instance: InstanceReference }): ReactElement => {
   const [assetIds, fdmIds] = useMemo(
     () => [
-      isAssetInstance(instance) ? [{ id: instance.assetId }] : EMPTY_ARRAY,
+      isIdEither(instance) ? [instance] : EMPTY_ARRAY,
       isDmsInstance(instance) ? [instance] : EMPTY_ARRAY
     ],
     [instance]

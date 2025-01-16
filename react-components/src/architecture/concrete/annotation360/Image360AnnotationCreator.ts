@@ -8,6 +8,7 @@ import { type BaseTool } from '../../base/commands/BaseTool';
 import { LineCreator } from '../primitives/line/LineCreator';
 import assert from 'assert';
 import { EDIT_WITHOUT_IMAGE } from './constants';
+import { type DmsUniqueIdentifier } from '../../../data-providers';
 
 export class Image360AnnotationCreator extends LineCreator {
   // ==================================================
@@ -15,7 +16,7 @@ export class Image360AnnotationCreator extends LineCreator {
   // ==================================================
 
   public constructor(tool: BaseTool) {
-    const imageId: string | undefined = EDIT_WITHOUT_IMAGE
+    const imageId: DmsUniqueIdentifier | string | undefined = EDIT_WITHOUT_IMAGE
       ? 'Dummy'
       : tool.renderTarget.active360ImageId;
     assert(imageId !== undefined, 'Image360AnnotationCreator: image360Id is undefined');

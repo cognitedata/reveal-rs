@@ -18,7 +18,7 @@ export class RegularGrid2 extends Grid2 {
   public readonly origin: Vector2;
   public readonly increment: Vector2;
 
-  private _buffer: Float32Array; // NaN value in this array means undefined node
+  private _buffer: Float32Array<ArrayBuffer>; // NaN value in this array means undefined node
   private _hasRotationAngle = false;
   private _rotationAngle = 0;
   private _sinRotationAngle = 0; // Due to speed

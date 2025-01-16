@@ -4,9 +4,9 @@
 
 import { type CogniteClient, type Node3D } from '@cognite/sdk';
 import {
-  type DmsUniqueIdentifier,
   type FdmSDK,
-  type InspectResultList
+  type InspectResultList,
+  type DmsUniqueIdentifier
 } from '../../data-providers/FdmSDK';
 import { chunk } from 'lodash';
 import { type ModelId, type NodeId, type RevisionId, type TreeIndex } from './types';

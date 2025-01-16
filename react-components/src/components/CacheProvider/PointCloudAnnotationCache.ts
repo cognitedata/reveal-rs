@@ -10,7 +10,7 @@ import {
   type AnnotationId
 } from './types';
 import { type CogniteClient, type Asset, type AnnotationFilterProps } from '@cognite/sdk';
-import { getAssetIdOrExternalIdFromPointCloudAnnotation } from './utils';
+import { getInstanceReferenceFromPointCloudAnnotation } from './utils';
 import { fetchPointCloudAnnotationAssets } from './AnnotationModelUtils';
 import assert from 'assert';
 import { createModelRevisionKey } from './idAndKeyTranslation';
@@ -93,7 +93,7 @@ export class PointCloudAnnotationCache {
       )
     );
     const filteredAnnotationModelsByAsset = annotationModels.filter((annotation) => {
-      return getAssetIdOrExternalIdFromPointCloudAnnotation(annotation) !== undefined;
+      return getInstanceReferenceFromPointCloudAnnotation(annotation) !== undefined;
     });
     return filteredAnnotationModelsByAsset as PointCloudAnnotationModel[];
   }
