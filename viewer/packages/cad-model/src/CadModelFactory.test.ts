@@ -55,7 +55,13 @@ describe('CadModelFactory', () => {
 
     const mock = new Mock<ModelDataProvider>()
       .setup(p => p.getJsonFile(testBaseUrl, It.IsAny<string>()))
-      .returns(Promise.resolve({ version: testOutput.version, sectors: [sector] }));
+      .returns(
+        Promise.resolve({
+          version: testOutput.version,
+          maxTreeIndex: 21, // Arbitrary non-po2 number
+          sectors: [sector]
+        })
+      );
 
     factory = new CadModelFactory(materialManager, modelMetadataProviderMock.object(), mock.object());
   });
