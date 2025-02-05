@@ -56,13 +56,13 @@ const KeepAliveMockScenario = (): ReactElement => {
                   <RevealResourcesFitCameraOnLoad
                     resources={[
                       {
-                        modelId: 1791160622840317,
-                        revisionId: 498427137020189,
+                        modelId: 8697040515478028,
+                        revisionId: 8461579143311086,
                         transform: new Matrix4().makeTranslation(40, 0, 0)
                       },
                       {
-                        modelId: 1791160622840317,
-                        revisionId: 498427137020189,
+                        modelId: 8697040515478028,
+                        revisionId: 8461579143311086,
                         transform: new Matrix4().makeTranslation(40, 10, 0)
                       },
                       {
