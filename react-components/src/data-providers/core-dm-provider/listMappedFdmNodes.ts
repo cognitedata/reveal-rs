@@ -10,7 +10,7 @@ import {
   type Source
 } from '../FdmSDK';
 import { type COGNITE_ASSET_SOURCE, type CogniteAssetProperties } from './dataModels';
-import { cadAndPointCloudAssetQuery } from './cadAndPointCloudAssetQuery';
+import { cadAndPointCloudAndImage36AssetQuery } from './cadAndPointCloudAndImage360AssetQuery';
 
 export async function listAllMappedFdmNodes(
   revisionRefs: DmsUniqueIdentifier[],
@@ -18,9 +18,18 @@ export async function listAllMappedFdmNodes(
   instancesFilter: InstanceFilter | undefined,
   fdmSdk: FdmSDK
 ): Promise<NodeItem[]> {
+  if (revisionRefs.length === 0) {
+    return [];
+  }
+
   const filter = makeSureNonEmptyFilterForRequest(instancesFilter);
 
-  const rawQuery = cadAndPointCloudAssetQuery(sourcesToSearch, filter, 10000);
+  const rawQuery = cadAndPointCloudAndImage36AssetQuery(
+    sourcesToSearch,
+    revisionRefs,
+    filter,
+    10000
+  );
 
   const query = {
     ...rawQuery,
@@ -48,7 +57,12 @@ export async function listMappedFdmNodes(
 
   const filter = makeSureNonEmptyFilterForRequest(instancesFilter);
 
-  const rawQuery = cadAndPointCloudAssetQuery(sourcesToSearch, filter, limit);
+  const rawQuery = cadAndPointCloudAndImage36AssetQuery(
+    sourcesToSearch,
+    revisionRefs,
+    filter,
+    limit
+  );
 
   const query = {
     ...rawQuery,
@@ -60,5 +74,7 @@ export async function listMappedFdmNodes(
     [{ source: typeof COGNITE_ASSET_SOURCE; properties: CogniteAssetProperties }]
   >(query);
 
-  return queryResult.items.cad_assets.concat(queryResult.items.pointcloud_assets);
+  return queryResult.items.cad_assets
+    .concat(queryResult.items.pointcloud_assets)
+    .concat(queryResult.items.image360_assets);
 }

@@ -11,7 +11,7 @@ import {
   is360ImageAddOptions,
   is360ImageEventsAddOptions,
   isClassicIdentifier,
-  isDMIdentifier
+  isDM3DModelIdentifier
 } from '../components/Reveal3DResources/typeGuards';
 
 export function isSameGeometryFilter(
@@ -45,8 +45,8 @@ export function isSameModel(model0: AddResourceOptions, model1: AddResourceOptio
   const isSecondImage360 = is360ImageAddOptions(model1);
   const isFirstModelClassic = isClassicIdentifier(model0);
   const isSecondModelClassic = isClassicIdentifier(model1);
-  const isFirstModelDM = isDMIdentifier(model0);
-  const isSecondModelDM = isDMIdentifier(model1);
+  const isFirstModelDM = isDM3DModelIdentifier(model0);
+  const isSecondModelDM = isDM3DModelIdentifier(model1);
 
   if (isFirstImage360 !== isSecondImage360) {
     return false;

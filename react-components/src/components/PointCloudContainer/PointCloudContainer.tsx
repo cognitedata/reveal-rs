@@ -21,7 +21,7 @@ import { modelExists } from '../../utilities/modelExists';
 import { getViewerResourceCount } from '../../utilities/getViewerResourceCount';
 import { type PointCloudModelStyling } from './types';
 import { useModelIdRevisionIdFromModelOptions } from '../../hooks/useModelIdRevisionIdFromModelOptions';
-import { isClassicIdentifier, isDMIdentifier } from '../Reveal3DResources';
+import { isClassicIdentifier, isDM3DModelIdentifier } from '../Reveal3DResources';
 import { isSameModel } from '../../utilities/isSameModel';
 
 export type CognitePointCloudModelProps = {
@@ -139,7 +139,7 @@ function defaultLoadErrorHandler(addOptions: AddModelOptions<DataSourceType>, er
     console.warn(
       `Failed to load (${addOptions.modelId}, ${addOptions.revisionId}): ${JSON.stringify(error)}`
     );
-  } else if (isDMIdentifier(addOptions)) {
+  } else if (isDM3DModelIdentifier(addOptions)) {
     console.warn(
       `Failed to load (${addOptions.revisionExternalId}, ${addOptions.revisionSpace}): ${JSON.stringify(error)}`
     );

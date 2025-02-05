@@ -75,6 +75,27 @@ export const COGNITE_POINT_CLOUD_VOLUME_SOURCE = {
   type: 'view'
 } as const satisfies ViewReference;
 
+export const COGNITE_IMAGE_360_SOURCE = {
+  externalId: 'Cognite360Image',
+  space: CORE_DM_SPACE,
+  version: 'v1',
+  type: 'view'
+} as const satisfies ViewReference;
+
+export const COGNITE_IMAGE_360_ANNOTATION_SOURCE = {
+  externalId: 'Cognite360ImageAnnotation',
+  space: CORE_DM_SPACE,
+  version: 'v1',
+  type: 'view'
+} as const satisfies ViewReference;
+
+export const COGNITE_IMAGE_360_COLLECTION_SOURCE = {
+  type: 'view',
+  space: CORE_DM_SPACE,
+  externalId: 'Cognite360ImageCollection',
+  version: 'v1'
+} as const satisfies ViewReference;
+
 export enum Cognite3DModel_type {
   CAD = 'CAD',
   PointCloud = 'PointCloud',

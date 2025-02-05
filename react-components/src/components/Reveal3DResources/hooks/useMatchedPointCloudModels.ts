@@ -12,7 +12,7 @@ import {
 } from '@cognite/reveal';
 import { useMemo } from 'react';
 import { EMPTY_ARRAY } from '../../../utilities/constants';
-import { isDMIdentifier } from '../typeGuards';
+import { isDM3DModelIdentifier } from '../typeGuards';
 
 type MatchedPointCloudModel = {
   viewerModel: CognitePointCloudModel<DataSourceType>;
@@ -30,7 +30,7 @@ export function useMatchedPointCloudModels(
       }
       const model = viewerModel;
       const matchedModel = classicModelOptions.find((modelOption) => {
-        if (isDMPointCloudModel(model) && isDMIdentifier(modelOption)) {
+        if (isDMPointCloudModel(model) && isDM3DModelIdentifier(modelOption)) {
           return (
             model.modelIdentifier.revisionExternalId === modelOption.revisionExternalId &&
             model.modelIdentifier.revisionSpace === modelOption.revisionSpace

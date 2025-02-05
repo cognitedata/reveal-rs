@@ -5,7 +5,7 @@ import {
   is360ImageDataModelAddOptions,
   is360ImageEventsAddOptions,
   isClassicIdentifier,
-  isDMIdentifier
+  isDM3DModelIdentifier
 } from '../components/Reveal3DResources/typeGuards';
 import { type TaggedAddResourceOptions } from '../components/Reveal3DResources/types';
 
@@ -19,7 +19,7 @@ export function createAddOptionsKey(model: TaggedAddResourceOptions): string {
       if (isClassicIdentifier(addOptions)) {
         return `${type}-${addOptions.modelId}-${addOptions.revisionId}`;
       }
-      if (isDMIdentifier(addOptions)) {
+      if (isDM3DModelIdentifier(addOptions)) {
         return `${type}-${addOptions.revisionExternalId}-${addOptions.revisionSpace}`;
       }
       break;

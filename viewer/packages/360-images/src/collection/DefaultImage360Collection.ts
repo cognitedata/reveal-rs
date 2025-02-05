@@ -306,7 +306,7 @@ export class DefaultImage360Collection<T extends DataSourceType> implements Imag
     | AssetAnnotationImage360Info<DMDataSourceType>[]
     | AssetAnnotationImage360Info<DataSourceType>[]
   > {
-    return this._image360DataProvider.getAllImage360AnnotationInfos(source, this, annotation =>
+    return await this._image360DataProvider.getAllImage360AnnotationInfos(source, this, annotation =>
       this._annotationFilter.filter(annotation)
     );
   }

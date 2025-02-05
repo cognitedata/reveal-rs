@@ -30,4 +30,4 @@ export {
   useReveal3DLoadedResourceCount
 } from './Reveal3DResourcesInfoContext';
 
-export { isClassicIdentifier, isDMIdentifier } from './typeGuards';
+export { isClassicIdentifier, isDM3DModelIdentifier } from './typeGuards';

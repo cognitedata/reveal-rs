@@ -12,13 +12,14 @@ import {
   COGNITE_POINT_CLOUD_VOLUME_VIEW_VERSION_KEY,
   CORE_DM_SPACE
 } from './dataModels';
-import { type DmsUniqueIdentifier, type FdmSDK } from '../FdmSDK';
+import { type EdgeItem, type DmsUniqueIdentifier, type FdmSDK } from '../FdmSDK';
 import { type FdmKey } from '../../components/CacheProvider/types';
 import { createFdmKey } from '../../components/CacheProvider/idAndKeyTranslation';
 import { type PromiseType } from '../utils/typeUtils';
 import { isString } from 'lodash';
 import { type QueryResult } from '../utils/queryNodesAndEdges';
-import { check3dConnectedEquipmentQuery } from './check3dConnectedEquipmentQuery';
+import { createCheck3dConnectedEquipmentQuery } from './check3dConnectedEquipmentQuery';
+import { restrictToDmsId } from '../../utilities/restrictToDmsId';
 
 export async function filterNodesByMappedTo3d(
   nodes: InstancesWithView[],
@@ -74,7 +75,27 @@ function createRelevantObject3dKeys(
       )
     );
 
-  return new Set<FdmKey>([...cadObject3dList, ...pointCloudObject3dList]);
+  const relevant360NodeKeys = new Set<FdmKey>(
+    [
+      ...connectionData.items.initial_360_image_nodes,
+      ...connectionData.items.direct_360_image_nodes,
+      ...connectionData.items.indirect_360_image_nodes
+    ].map(createFdmKey)
+  );
+
+  const relevant360AnnotationEdges = (
+    [
+      ...connectionData.items.initial_360_annotation_edges,
+      ...connectionData.items.direct_360_annotation_edges,
+      ...connectionData.items.indirect_360_annotation_edges
+    ] as unknown[] as EdgeItem[]
+  ).filter((edge) => relevant360NodeKeys.has(createFdmKey(edge.endNode)));
+
+  const image360Object3dList = relevant360AnnotationEdges.map((edge) =>
+    createFdmKey(edge.startNode)
+  );
+
+  return new Set<FdmKey>([...cadObject3dList, ...pointCloudObject3dList, ...image360Object3dList]);
 }
 
 type SelectSourcesType = [
@@ -90,21 +111,24 @@ async function fetchConnectionData(
   nodes: InstancesWithView[],
   revisionRefs: DmsUniqueIdentifier[],
   fdmSdk: FdmSDK
-): Promise<QueryResult<typeof check3dConnectedEquipmentQuery, SelectSourcesType>> {
-  const initialExternalIds = nodes.flatMap((node) =>
-    node.instances.map((instance) => instance.externalId)
+): Promise<
+  QueryResult<ReturnType<typeof createCheck3dConnectedEquipmentQuery>, SelectSourcesType>
+> {
+  const initialIds = nodes.flatMap((node) => node.instances.map(restrictToDmsId));
+
+  const directlyConnectedIds = nodes.flatMap((node) =>
+    node.instances.flatMap((instance) => getDirectRelationProperties(instance).map(restrictToDmsId))
   );
 
-  const directlyMappedIds = nodes.flatMap((node) =>
-    node.instances.flatMap((instance) =>
-      getDirectRelationProperties(instance).map((props) => props.externalId)
-    )
+  const parameters = { revisionRefs };
+  const rawQuery = createCheck3dConnectedEquipmentQuery(
+    initialIds,
+    directlyConnectedIds,
+    revisionRefs
   );
-
-  const parameters = { initialExternalIds, directlyMappedIds, revisionRefs };
 
   const query = {
-    ...check3dConnectedEquipmentQuery,
+    ...rawQuery,
     parameters
   };
 

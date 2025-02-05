@@ -3,6 +3,7 @@
  */
 
 import {
+  type TableExpressionLeafFilter,
   type HasExistingDataFilterV3,
   type TableExpressionContainsAnyFilterV3
 } from '@cognite/sdk';
@@ -45,4 +46,10 @@ export function getRevisionContainsAnyFilter(
       values: revisionReferences
     }
   } as const satisfies TableExpressionContainsAnyFilterV3;
+}
+
+export function hasIdFilter(refs: DmsUniqueIdentifier[]): TableExpressionLeafFilter {
+  return {
+    instanceReferences: refs
+  } as unknown as TableExpressionLeafFilter;
 }

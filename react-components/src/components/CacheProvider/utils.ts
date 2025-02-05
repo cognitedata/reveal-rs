@@ -23,9 +23,7 @@ export function getInstanceReferenceFromPointCloudAnnotation(
 ): IdEither | undefined {
   const annotationData = annotation.data as AnnotationsBoundingVolume;
   const assetRef = annotationData.assetRef;
-  return assetRef !== undefined && isIdEither(annotationData.assetRef as IdEither)
-    ? (assetRef as IdEither)
-    : undefined;
+  return assetRef !== undefined && isIdEither(assetRef) ? assetRef : undefined;
 }
 
 export function getInstanceReferenceFromImage360Annotation(
