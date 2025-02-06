@@ -48,14 +48,14 @@
     "@cognite/cogs.js": "^10.36.0",
     "@cognite/reveal": "^4.23.2",
     "@cognite/sdk": "^9.13.0",
-    "@playwright/test": "1.49.0",
-    "@storybook/addon-essentials": "8.4.5",
-    "@storybook/addon-interactions": "8.4.5",
-    "@storybook/addon-links": "8.4.5",
-    "@storybook/blocks": "8.4.5",
-    "@storybook/react": "8.4.5",
-    "@storybook/react-vite": "8.4.5",
-    "@storybook/test": "8.4.5",
+    "@playwright/test": "1.50.1",
+    "@storybook/addon-essentials": "8.5.3",
+    "@storybook/addon-interactions": "8.5.3",
+    "@storybook/addon-links": "8.5.3",
+    "@storybook/blocks": "8.5.3",
+    "@storybook/react": "8.5.3",
+    "@storybook/react-vite": "8.5.3",
+    "@storybook/test": "8.5.3",
     "@tanstack/react-query-devtools": "^5.32.0",
     "@testing-library/react": "^16.0.0",
     "@tippyjs/react": "4.2.6",
@@ -80,7 +80,7 @@
     "happy-dom": "^15.0.0",
     "locize-cli": "^8.0.1",
     "moq.ts": "10.0.8",
-    "playwright": "1.49.0",
+    "playwright": "1.50.1",
     "prettier": "^3.2.5",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
@@ -96,14 +96,14 @@
     "typescript": "^5.4.5",
     "vite": "^5.2.10",
     "vite-plugin-dts": "^4.0.0",
-    "vite-plugin-externalize-deps": "^0.8.0",
+    "vite-plugin-externalize-deps": "^0.9.0",
     "vitest": "^1.5.3"
   },
-  "packageManager": "yarn@4.5.2",
+  "packageManager": "yarn@4.6.0",
   "files": [
     "dist"
   ],
   "resolutions": {
-    "@mui/base": "5.0.0-beta.62"
+    "@mui/base": "5.0.0-beta.69"
   }
 }
