@@ -133,14 +133,16 @@ export const useAllMappedEquipmentFDM = (
 ): UseQueryResult<NodeItem[]> => {
   const fdmDataProvider = useFdm3dDataProvider();
 
+  const modelKeys = useMemo(() => getModelKeys(models), [models]);
+
   return useQuery({
-    queryKey: ['reveal', 'react-components', 'all-mapped-equipment-fdm', viewsToSearch, models],
+    queryKey: ['reveal', 'react-components', 'all-mapped-equipment-fdm', viewsToSearch, modelKeys],
     queryFn: async () => {
       const viewSources = createSourcesFromViews(viewsToSearch);
-
-      return await fdmDataProvider.listAllMappedFdmNodes(models, viewSources, undefined);
+      await fdmDataProvider.listAllMappedFdmNodes(models, viewSources, undefined);
     },
-    staleTime: Infinity
+    staleTime: Infinity,
+    enabled: models.length > 0 && viewsToSearch.length > 0
   });
 };
 

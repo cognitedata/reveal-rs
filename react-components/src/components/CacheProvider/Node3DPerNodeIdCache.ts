@@ -16,8 +16,11 @@ export class Node3DPerNodeIdCache {
 
   private readonly _nodeIdsToNode3D = new Map<ModelTreeIndexKey, Promise<Node3D>>();
 
-  constructor(sdk: CogniteClient) {
+  private readonly isCoreDmOnly: boolean;
+
+  constructor(sdk: CogniteClient, coreDmOnly: boolean) {
     this._sdk = sdk;
+    this.isCoreDmOnly = coreDmOnly;
   }
 
   private async splitChunkInCacheNode3D(
@@ -40,7 +43,7 @@ export class Node3DPerNodeIdCache {
       })
     );
 
-    return { chunkInCache, chunkNotInCache: chunkNotCached };
+    return { chunkInCache, chunkNotInCacheIdClassic: chunkNotCached };
   }
 
   public async generateNode3DCachePerItem(
@@ -60,13 +63,21 @@ export class Node3DPerNodeIdCache {
     revisionId: RevisionId,
     nodeIds: number[]
   ): Promise<Node3D[]> {
-    const { chunkNotInCache, chunkInCache } = await this.splitChunkInCacheNode3D(
+    const { chunkNotInCacheIdClassic, chunkInCache } = await this.splitChunkInCacheNode3D(
       nodeIds,
       modelId,
       revisionId
     );
 
-    const nodes = await fetchNodesForNodeIds(modelId, revisionId, chunkNotInCache, this._sdk);
+    if (chunkNotInCacheIdClassic === undefined || chunkNotInCacheIdClassic?.length === 0) {
+      return chunkInCache;
+    }
+    const nodes = await fetchNodesForNodeIds(
+      modelId,
+      revisionId,
+      chunkNotInCacheIdClassic,
+      this._sdk
+    );
     const allNodes = chunkInCache.concat(nodes);
     return allNodes;
   }

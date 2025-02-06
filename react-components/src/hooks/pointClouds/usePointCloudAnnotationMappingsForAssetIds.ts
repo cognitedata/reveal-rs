@@ -28,7 +28,10 @@ export const usePointCloudAnnotationMappingsForAssetIds = (
     queryKey: [
       queryKeys.pointCloudAnnotationForAssetIds(
         classicModelOptions.map((model) => `${model.modelId}/${model.revisionId}`).sort(),
-        assetIds?.map((assetId) => assetId.toString()).sort() ?? []
+        assetIds
+          ?.filter((assetId) => isDefined(assetId))
+          .map((assetId) => assetId.toString())
+          .sort() ?? []
       )
     ],
     queryFn: async () => {

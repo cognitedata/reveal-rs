@@ -2,6 +2,7 @@
  * Copyright 2023 Cognite AS
  */
 import {
+  type HybridFdmAssetStylingGroup,
   type AssetStylingGroup,
   type CadModelOptions,
   type DefaultResourceStyling,
@@ -24,7 +25,8 @@ import {
 } from '../../CadModelContainer/types';
 import {
   isClassicAssetMappingStylingGroup,
-  isFdmAssetStylingGroup
+  isFdmAssetStylingGroup,
+  isHybridFdmAssetStylingGroup
 } from '../../../utilities/StylingGroupUtils';
 import { type ThreeDModelFdmMappings } from '../../../hooks/types';
 import { isSameModel } from '../../../utilities/isSameModel';
@@ -33,6 +35,8 @@ import {
   useMappedEdgesForRevisions,
   useNodesForAssets
 } from '../../../hooks/cad';
+import { useHybridAssetMappings } from '../../../hooks/cad/useHybridAssetMappings';
+import { createFdmKey } from '../../CacheProvider/idAndKeyTranslation';
 
 type ModelStyleGroup = {
   model: CadModelOptions;
@@ -56,7 +60,7 @@ export type StyledModel = {
 
 export const useCalculateCadStyling = (
   models: CadModelOptions[],
-  instanceGroups: Array<FdmAssetStylingGroup | AssetStylingGroup>,
+  instanceGroups: Array<FdmAssetStylingGroup | AssetStylingGroup | HybridFdmAssetStylingGroup>,
   defaultResourceStyling?: DefaultResourceStyling
 ): StyledModelWithMappingsFetched => {
   const modelsMappedStyleGroups = useCalculateMappedStyling(
@@ -186,7 +190,7 @@ function useCalculateMappedStyling(
 
 function useCalculateInstanceStyling(
   models: CadModelOptions[],
-  instanceGroups: Array<FdmAssetStylingGroup | AssetStylingGroup>
+  instanceGroups: Array<FdmAssetStylingGroup | AssetStylingGroup | HybridFdmAssetStylingGroup>
 ): ModelStyleGroupWithMappingsFetched {
   const { data: fdmAssetMappings } = useFdmAssetMappings(
     instanceGroups
@@ -199,12 +203,21 @@ function useCalculateInstanceStyling(
     .filter(isClassicAssetMappingStylingGroup)
     .flatMap((instanceGroup) => instanceGroup.assetIds);
 
+  const hybridFdmAssetFromInstanceGroups = instanceGroups
+    .filter(isHybridFdmAssetStylingGroup)
+    .flatMap((instanceGroup) => instanceGroup.hybridFdmAssetExternalIds);
+
   const {
     data: modelAssetMappings,
     isLoading: isModelMappingsLoading,
     isFetched: isModelMappingsFetched,
     isError
   } = useNodesForAssets(models, assetIdsFromInstanceGroups);
+
+  const { data: modelHybridAssetMappings } = useHybridAssetMappings(
+    hybridFdmAssetFromInstanceGroups,
+    models
+  );
 
   const fdmModelInstanceStyleGroups = useFdmInstanceStyleGroups(
     models,
@@ -218,13 +231,24 @@ function useCalculateInstanceStyling(
     modelAssetMappings
   );
 
+  const hybridAssetMappingInstanceStyleGroups = useHybridFdmInstanceStyleGroups(
+    models,
+    instanceGroups,
+    modelHybridAssetMappings
+  );
+
   const combinedMappedStyleGroups = useMemo(
     () =>
       groupStyleGroupByModel(models, [
         ...fdmModelInstanceStyleGroups,
-        ...assetMappingInstanceStyleGroups
+        ...assetMappingInstanceStyleGroups,
+        ...hybridAssetMappingInstanceStyleGroups
       ]),
-    [fdmModelInstanceStyleGroups, assetMappingInstanceStyleGroups]
+    [
+      fdmModelInstanceStyleGroups,
+      assetMappingInstanceStyleGroups,
+      hybridAssetMappingInstanceStyleGroups
+    ]
   );
 
   return {
@@ -235,7 +259,7 @@ function useCalculateInstanceStyling(
 
 function useAssetMappingInstanceStyleGroups(
   models: CadModelOptions[],
-  instanceGroups: Array<FdmAssetStylingGroup | AssetStylingGroup>,
+  instanceGroups: Array<FdmAssetStylingGroup | AssetStylingGroup | HybridFdmAssetStylingGroup>,
   modelAssetMappings: ModelRevisionAssetNodesResult[] | undefined
 ): ModelStyleGroup[] {
   return useMemo(() => {
@@ -255,7 +279,7 @@ function useAssetMappingInstanceStyleGroups(
 
 function useFdmInstanceStyleGroups(
   models: CadModelOptions[],
-  instanceGroups: Array<FdmAssetStylingGroup | AssetStylingGroup>,
+  instanceGroups: Array<FdmAssetStylingGroup | AssetStylingGroup | HybridFdmAssetStylingGroup>,
   fdmAssetMappings: ThreeDModelFdmMappings[] | undefined
 ): ModelStyleGroup[] {
   return useMemo(() => {
@@ -268,6 +292,29 @@ function useFdmInstanceStyleGroups(
         fdmAssetMappings !== undefined
           ? calculateFdmCadModelStyling(
               instanceGroups.filter(isFdmAssetStylingGroup),
+              fdmAssetMappings,
+              model
+            )
+          : [];
+      return { model, styleGroup };
+    });
+  }, [models, instanceGroups, fdmAssetMappings]);
+}
+
+function useHybridFdmInstanceStyleGroups(
+  models: CadModelOptions[],
+  instanceGroups: Array<FdmAssetStylingGroup | AssetStylingGroup | HybridFdmAssetStylingGroup>,
+  fdmAssetMappings: ThreeDModelFdmMappings[] | undefined
+): ModelStyleGroup[] {
+  return useMemo(() => {
+    if (models.length === 0 || fdmAssetMappings === undefined) {
+      return [];
+    }
+    return models.map((model) => {
+      const styleGroup =
+        fdmAssetMappings !== undefined
+          ? calculateHybridAssetMappingCadModelStyling(
+              instanceGroups.filter(isHybridFdmAssetStylingGroup),
               fdmAssetMappings,
               model
             )
@@ -368,6 +415,35 @@ function calculateFdmCadModelStyling(
     .map((resourcesGroup) => {
       const modelMappedNodeLists = resourcesGroup.fdmAssetExternalIds
         .map((uniqueId) => modelMappings.get(uniqueId.externalId))
+        .filter((nodeMap): nodeMap is Map<NodeId, Node3D> => nodeMap !== undefined)
+        .map((nodeMap) => [...nodeMap.values()]);
+
+      const indexSet = new IndexSet();
+      modelMappedNodeLists.forEach((nodes) => {
+        nodes.forEach((n) => {
+          indexSet.addRange(getNodeSubtreeNumericRange(n));
+        });
+      });
+
+      return {
+        style: resourcesGroup.style.cad,
+        treeIndexSet: indexSet
+      };
+    })
+    .filter((group) => group.treeIndexSet.count > 0);
+}
+
+function calculateHybridAssetMappingCadModelStyling(
+  stylingGroups: HybridFdmAssetStylingGroup[],
+  mappings: ThreeDModelFdmMappings[],
+  model: CadModelOptions
+): TreeIndexStylingGroup[] {
+  const modelMappings = getModelMappings(mappings, model);
+
+  return stylingGroups
+    .map((resourcesGroup) => {
+      const modelMappedNodeLists = resourcesGroup.hybridFdmAssetExternalIds
+        .map((uniqueId) => modelMappings.get(createFdmKey(uniqueId)))
         .filter((nodeMap): nodeMap is Map<NodeId, Node3D> => nodeMap !== undefined)
         .map((nodeMap) => [...nodeMap.values()]);
 

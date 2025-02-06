@@ -2,7 +2,7 @@
  * Copyright 2024 Cognite AS
  */
 import { type CogniteClient, type Asset, type IdEither } from '@cognite/sdk';
-import { uniqBy, chunk, partition } from 'lodash';
+import { uniqBy, chunk } from 'lodash';
 import { isDefined } from '../../utilities/isDefined';
 import { type AnnotationId, type PointCloudAnnotationModel } from './types';
 import { getInstanceReferenceFromPointCloudAnnotation } from './utils';
@@ -14,7 +14,13 @@ import {
   COGNITE_ASSET_VIEW_VERSION_KEY,
   CORE_DM_SPACE
 } from '../../data-providers/core-dm-provider/dataModels';
-import { type InstanceReference, isIdEither } from '../../utilities/instanceIds';
+import {
+  type InstanceReference,
+  isAssetInstanceReference,
+  isDmsInstance,
+  isHybridAssetCoreDmsInstance,
+  isIdEither
+} from '../../utilities/instanceIds';
 import { isSameIdEither } from '../../utilities/instanceIds/equality';
 import { type AssetInstance } from '../../utilities/instances';
 
@@ -56,11 +62,23 @@ export async function fetchAssetsForAssetReferences(
   assetIds: InstanceReference[],
   sdk: CogniteClient
 ): Promise<AssetInstance[]> {
-  const [classicIds, dmIds] = partition(assetIds, isIdEither);
+  const classicAssetIds = assetIds.filter(isIdEither);
+  const assetIdReference = assetIds.filter(isAssetInstanceReference);
+
+  const dmIds = assetIds.filter(isDmsInstance);
+  const hybridAssetIdReference = assetIds.filter(isHybridAssetCoreDmsInstance);
+
+  const combinedDMSAssets = dmIds.concat(
+    hybridAssetIdReference.map((hybrid) => hybrid.assetInstanceId)
+  );
+
+  const combinedClassicAssets = classicAssetIds.concat(
+    assetIdReference.map((assetId) => ({ id: assetId.assetId }))
+  );
 
   return ([] as AssetInstance[])
-    .concat(await fetchAssetsForAssetIds(classicIds, sdk))
-    .concat(await fetchAssetsForDmsIds(dmIds, sdk));
+    .concat(await fetchAssetsForAssetIds(combinedClassicAssets, sdk))
+    .concat(await fetchAssetsForDmsIds(combinedDMSAssets, sdk));
 }
 
 async function fetchAssetsForDmsIds(

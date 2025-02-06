@@ -5,5 +5,10 @@ import { type IdEither } from '@cognite/sdk';
 import { type DmsUniqueIdentifier, type Source } from '../../data-providers';
 
 export type FdmInstanceWithView = DmsUniqueIdentifier & { view: Source };
-
-export type InstanceReference = IdEither | DmsUniqueIdentifier;
+export type AssetInstanceReference = { assetId: number };
+export type AssetHybridInstanceReference = { assetInstanceId: DmsUniqueIdentifier };
+export type InstanceReference =
+  | IdEither
+  | DmsUniqueIdentifier
+  | AssetHybridInstanceReference
+  | AssetInstanceReference;

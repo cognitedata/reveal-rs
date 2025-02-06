@@ -1,7 +1,6 @@
 /*!
  * Copyright 2024 Cognite AS
  */
-import { type AssetMapping3D } from '@cognite/sdk';
 import { type ModelTreeIndexKey } from './types';
 import { type AssetMapping } from './AssetMappingAndNode3DCache';
 
@@ -10,7 +9,7 @@ export class AssetMappingPerNodeIdCache {
 
   public setNodeIdsToAssetMappingCacheItem(
     key: ModelTreeIndexKey,
-    item: Promise<Array<Required<AssetMapping3D>>>
+    item: Promise<AssetMapping[]>
   ): void {
     this._nodeIdsToAssetMappings.set(key, Promise.resolve(item));
   }

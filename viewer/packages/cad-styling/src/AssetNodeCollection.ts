@@ -84,7 +84,7 @@ export class AssetNodeCollection extends NodeCollection {
     const filterQuery = {
       assetId: filter.assetId,
       intersectsBoundingBox: mapBoundingBoxToCdf(filter.boundingBox),
-      limit: 1000
+      limit: 1000,
     };
 
     this._indexSet = fetchResultHelper.indexSet;

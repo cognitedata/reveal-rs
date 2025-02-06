@@ -109,6 +109,14 @@ export type FdmAssetStylingGroup = {
   };
 };
 
+export type HybridFdmAssetStylingGroup = {
+  hybridFdmAssetExternalIds: DmsUniqueIdentifier[];
+  style: {
+    cad?: NodeAppearance;
+    pointcloud?: NodeAppearance;
+  };
+};
+
 export type AssetStylingGroup = {
   assetIds: CogniteInternalId[];
   style: {
@@ -130,6 +138,7 @@ export type Image360DMAssetStylingGroup = {
 export type InstanceStylingGroup =
   | FdmAssetStylingGroup
   | AssetStylingGroup
+  | HybridFdmAssetStylingGroup
   | Image360AssetStylingGroup
   | Image360DMAssetStylingGroup;
 

@@ -17,6 +17,7 @@ export { use3dScenes } from './scenes/use3dScenes';
 export { useSceneConfig } from './scenes/useSceneConfig';
 export { useActiveReveal3dResources } from './useActiveReveal3dResources';
 export { useGhostMode } from './useGhostMode';
+export { useIsCoreDmOnly } from './useIsCoreDmOnly';
 
 export type { SceneData } from './scenes/types';
 export type { CameraNavigationActions } from './useCameraNavigation';

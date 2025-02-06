@@ -7,6 +7,7 @@ export type {
   Reveal3DResourcesProps,
   FdmAssetStylingGroup,
   AssetStylingGroup,
+  HybridFdmAssetStylingGroup,
   DefaultResourceStyling,
   Image360AssetStylingGroup,
   Image360DMAssetStylingGroup,

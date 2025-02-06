@@ -6,6 +6,7 @@ import { type ExternalId } from '../../../../data-providers/FdmSDK';
 import {
   type InstanceReference,
   isDmsInstance,
+  isHybridAssetCoreDmsInstance,
   isInternalId
 } from '../../../../utilities/instanceIds';
 import { type PointsOfInterestInstance, type PoiVisibility, type SceneState } from '../models';
@@ -54,6 +55,11 @@ function instanceReferenceToPoiExternalInstanceReference(
     return instanceRef;
   } else if (isDmsInstance(instanceRef)) {
     return { externalId: instanceRef.externalId, instanceSpace: instanceRef.space };
+  } else if (isHybridAssetCoreDmsInstance(instanceRef)) {
+    return {
+      externalId: instanceRef.assetInstanceId.externalId,
+      instanceSpace: instanceRef.assetInstanceId.space
+    };
   }
 
   return undefined;

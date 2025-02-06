@@ -8,6 +8,7 @@ import { useFdmSdk, useSDK } from '../components/RevealCanvas/SDKProvider';
 import { type InternalId, type CogniteClient } from '@cognite/sdk';
 import { type TaggedAddResourceOptions } from '../components/Reveal3DResources/types';
 import { getImage360CollectionsForAsset } from '../hooks/network/getImage360CollectionsForAsset';
+
 import { uniqBy } from 'lodash';
 import { createAddOptionsKey } from '../utilities/createAddOptionsKey';
 import { type Fdm3dDataProvider } from '../data-providers/Fdm3dDataProvider';
@@ -15,7 +16,12 @@ import { type DmsUniqueIdentifier } from '../data-providers';
 import { getPointCloudModelsForAssetInstance } from '../hooks/network/getPointCloudModelsForAssetInstance';
 import { type FdmSDK } from '../data-providers/FdmSDK';
 import { useFdm3dDataProvider } from '../components/CacheProvider/CacheProvider';
-import { type InstanceReference, isDmsInstance, isInternalId } from '../utilities/instanceIds';
+import {
+  type InstanceReference,
+  isDmsInstance,
+  isHybridAssetCoreDmsInstance,
+  isInternalId
+} from '../utilities/instanceIds';
 
 export const useModelsForInstanceQuery = (
   instance: InstanceReference | undefined
@@ -37,6 +43,10 @@ export const useModelsForInstanceQuery = (
 
       if (isDmsInstance(instance)) {
         return await getModelsForDmsInstance(instance, fdmSdk, fdm3dDataProvider);
+      }
+
+      if (isHybridAssetCoreDmsInstance(instance)) {
+        return await getModelsForDmsInstance(instance.assetInstanceId, fdmSdk, fdm3dDataProvider);
       }
 
       throw Error(

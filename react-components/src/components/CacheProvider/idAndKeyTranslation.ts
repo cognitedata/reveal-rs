@@ -10,7 +10,8 @@ import {
   type TreeIndex,
   type RevisionId,
   type ModelId,
-  type ModelAssetIdKey
+  type ModelAssetIdKey,
+  type ModelDMSUniqueInstanceKey
 } from './types';
 
 import { split } from 'lodash';
@@ -30,6 +31,15 @@ export function createModelTreeIndexKey(
   treeIndex: TreeIndex
 ): ModelTreeIndexKey {
   return `${modelId}/${revisionId}/${treeIndex}`;
+}
+
+export function createModelDMSUniqueInstanceKey(
+  modelId: ModelId,
+  revisionId: RevisionId,
+  space: string,
+  externalId: string
+): ModelDMSUniqueInstanceKey {
+  return `${modelId}/${revisionId}/${space}/${externalId}`;
 }
 
 export function createFdmKey(id: DmsUniqueIdentifier): FdmKey {
