@@ -28,13 +28,13 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "stats.js": "0.17.0",
-    "styled-components": "6.1.13"
+    "styled-components": "6.1.14"
   },
   "devDependencies": {
     "@types/dat.gui": "^0.7.5",
     "@types/lodash": "^4.14.190",
-    "@types/react": "18.3.12",
-    "@types/react-dom": "18.3.1",
+    "@types/react": "18.3.18",
+    "@types/react-dom": "18.3.5",
     "@types/stats.js": "^0.17.0",
     "@types/three": "^0.166.0",
     "css-loader": "^7.0.0",
@@ -42,7 +42,7 @@
     "html-webpack-plugin": "^5.5.0",
     "prettier": "^3.0.0",
     "three": "0.166.1",
-    "ts-loader": "9.5.1",
+    "ts-loader": "9.5.2",
     "typescript": "^5.0.4",
     "webpack": "^5.76.0",
     "webpack-cli": "^5.0.0",
@@ -64,5 +64,5 @@
       "last 1 safari version"
     ]
   },
-  "packageManager": "yarn@4.5.2"
+  "packageManager": "yarn@4.6.0"
 }
