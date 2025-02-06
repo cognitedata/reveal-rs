@@ -411,6 +411,19 @@ export type ClippingPlanesState = {
     constant: number;
 };
 
+// @beta
+export class ClosestGeometryFinder<T> {
+    constructor(origin: Vector3);
+    add(point: Vector3, geometry: T): boolean;
+    addLazy(point: Vector3, geometryCreator: () => T): boolean;
+    clear(): void;
+    getClosestGeometry(): T | undefined;
+    isClosest(point: Vector3): boolean;
+    set minDistance(value: number);
+    get minDistance(): number;
+    setClosestGeometry(geometry: T): void;
+}
+
 // @public
 export class ClusteredAreaCollection implements AreaCollection {
     // (undocumented)
@@ -1479,6 +1492,9 @@ export function isDMPointCloudVolume(pointCloudMetadata: DataSourceType['pointCl
 
 // @beta
 export function isFlexibleCameraManager(manager: CameraManager): manager is IFlexibleCameraManager;
+
+// @public
+export function isPointVisibleByPlanes(planes: Plane[], point: Vector3): boolean;
 
 // @public (undocumented)
 export interface JsonFileProvider {

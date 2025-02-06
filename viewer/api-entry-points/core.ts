@@ -79,6 +79,8 @@ export {
   getWheelEventDelta,
   getNormalizedPixelCoordinatesBySize,
   getNormalizedPixelCoordinates,
+  isPointVisibleByPlanes,
+  ClosestGeometryFinder,
   CDF_TO_VIEWER_TRANSFORMATION
 } from '../packages/utilities';
 
