@@ -5,7 +5,7 @@ import { type ReactElement, useEffect, useMemo } from 'react';
 import { CadModelContainer } from '../CadModelContainer/CadModelContainer';
 import { PointCloudContainer } from '../PointCloudContainer/PointCloudContainer';
 import { Image360CollectionContainer } from '../Image360CollectionContainer/Image360CollectionContainer';
-import { useReveal } from '../RevealCanvas/ViewerContext';
+import { useRenderTarget } from '../RevealCanvas/ViewerContext';
 import { type Reveal3DResourcesProps, type CadModelOptions } from './types';
 import { useCalculatePointCloudStyling } from './hooks/useCalculatePointCloudStyling';
 import { EMPTY_ARRAY } from '../../utilities/constants';
@@ -36,11 +36,15 @@ export const Reveal3DResources = ({
   onResourceIsLoaded,
   image360Settings
 }: Reveal3DResourcesProps): ReactElement => {
-  const viewer = useReveal();
+  const renderTarget = useRenderTarget();
 
-  useRemoveNonReferencedModels(resources, viewer);
+  useRemoveNonReferencedModels(resources, renderTarget);
 
-  const { data: reveal3DModels } = useTypedModels(viewer, resources, onResourceLoadError);
+  const { data: reveal3DModels } = useTypedModels(
+    renderTarget.viewer,
+    resources,
+    onResourceLoadError
+  );
 
   useSetExpectedLoadCount(resources);
   useCallCallbackOnFinishedLoading(resources, onResourcesAdded);

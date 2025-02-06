@@ -9,11 +9,10 @@ import {
   type Cognite3DViewer,
   type IFlexibleCameraManager,
   CDF_TO_VIEWER_TRANSFORMATION,
-  CognitePointCloudModel,
   CogniteCadModel,
-  type Image360Collection,
-  type DataSourceType,
-  Image360Action
+  CognitePointCloudModel,
+  Image360Action,
+  type DataSourceType
 } from '@cognite/reveal';
 import {
   Vector3,
@@ -42,6 +41,7 @@ import { InstanceStylingController } from './InstanceStylingController';
 import { type Class } from '../domainObjectsHelpers/Class';
 import { CdfCaches } from './CdfCaches';
 import { type DmsUniqueIdentifier } from '../../../data-providers';
+import { type Image360Model, type PointCloud } from '../../concrete/reveal/RevealTypes';
 
 const DIRECTIONAL_LIGHT_NAME = 'DirectionalLight';
 
@@ -199,7 +199,7 @@ export class RevealRenderTarget {
   // INSTANCE METHODS: Get models from the viewer
   // ==================================================
 
-  public *getPointClouds(): Generator<CognitePointCloudModel<DataSourceType>> {
+  public *getPointClouds(): Generator<PointCloud> {
     for (const model of this.viewer.models) {
       if (model instanceof CognitePointCloudModel) {
         yield model;
@@ -215,7 +215,7 @@ export class RevealRenderTarget {
     }
   }
 
-  public *get360ImageCollections(): Generator<Image360Collection<DataSourceType>> {
+  public *get360ImageCollections(): Generator<Image360Model> {
     for (const collection of this.viewer.get360ImageCollections()) {
       yield collection;
     }

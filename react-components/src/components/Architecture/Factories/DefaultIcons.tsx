@@ -55,7 +55,8 @@ import {
   VectorLineIcon,
   VectorZigzagIcon,
   View360Icon,
-  WaypointIcon
+  WaypointIcon,
+  CubesIcon
 } from '@cognite/cogs.js';
 
 import { type IconName } from '../../../architecture/base/utilities/IconName';
@@ -76,6 +77,7 @@ export const DefaultIcons: Array<[IconName, IconType]> = [
   ['Copy', CopyIcon],
   ['Crop', CropIcon],
   ['Cube', CubeIcon],
+  ['Cubes', CubesIcon],
   ['CubeFrontLeft', CubeFrontLeftIcon],
   ['CubeFrontRight', CubeFrontRightIcon],
   ['CubeTop', CubeTopIcon],

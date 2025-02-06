@@ -2,15 +2,12 @@
  * Copyright 2024 Cognite AS
  */
 
-import {
-  type DataSourceType,
-  type CognitePointCloudModel,
-  type WellKnownAsprsPointClassCodes
-} from '@cognite/reveal';
+import { type WellKnownAsprsPointClassCodes } from '@cognite/reveal';
 import { type TranslationInput } from '../../utilities/TranslateInput';
 import { type Color } from 'three';
 import { BaseFilterCommand, BaseFilterItemCommand } from '../../commands/BaseFilterCommand';
 import { type RevealRenderTarget } from '../../renderTarget/RevealRenderTarget';
+import { type PointCloud } from '../../../concrete/reveal/RevealTypes';
 
 export class PointCloudFilterCommand extends BaseFilterCommand {
   // ==================================================
@@ -33,7 +30,7 @@ export class PointCloudFilterCommand extends BaseFilterCommand {
   }
 
   public override initializeChildrenIfNeeded(): void {
-    const pointCloud = getFirstPointCloudWithClasses(this.renderTarget);
+    const pointCloud = getFirstPointCloudWithClasses({ renderTarget: this.renderTarget });
     if (pointCloud === undefined) {
       this._children = undefined;
       this._modelId = undefined;
@@ -96,7 +93,7 @@ export class PointCloudFilterCommand extends BaseFilterCommand {
   // INSTANCE METHODS
   // ==================================================
 
-  private getPointCloud(): CognitePointCloudModel<DataSourceType> | undefined {
+  private getPointCloud(): PointCloud | undefined {
     if (this._modelId === undefined || this._revisionId === undefined) {
       return undefined;
     }
@@ -163,7 +160,7 @@ export class FilterItemCommand extends BaseFilterItemCommand {
   // INSTANCE METHODS
   // ==================================================
 
-  private getPointCloud(): CognitePointCloudModel<DataSourceType> | undefined {
+  private getPointCloud(): PointCloud | undefined {
     for (const pointCloud of this.renderTarget.getPointClouds()) {
       if (this._modelId === pointCloud.modelId && this._revisionId === pointCloud.revisionId) {
         return pointCloud;
@@ -200,9 +197,11 @@ export class PointClass {
 // PRIVATE FUNCTIONS
 // ==================================================
 
-function getFirstPointCloudWithClasses(
-  renderTarget: RevealRenderTarget
-): CognitePointCloudModel<DataSourceType> | undefined {
+function getFirstPointCloudWithClasses({
+  renderTarget
+}: {
+  renderTarget: RevealRenderTarget;
+}): PointCloud | undefined {
   for (const pointCloud of renderTarget.getPointClouds()) {
     const classes = pointCloud.getClasses();
     if (classes === undefined || classes.length === 0) {
@@ -213,7 +212,7 @@ function getFirstPointCloudWithClasses(
   return undefined;
 }
 
-function isAllClassesVisible(pointCloud: CognitePointCloudModel<DataSourceType>): boolean {
+function isAllClassesVisible(pointCloud: PointCloud): boolean {
   const classes = pointCloud.getClasses();
   if (classes === undefined || classes.length === 0) {
     return false;
